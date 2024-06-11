@@ -1,0 +1,4 @@
+dataRootPath = "/home/ginko/test"
+ephysRecordingPath = "/home/ginko/test/ephys"
+cam1Path = "/home/ginko/test/cam1"
+cam2Path = "/home/ginko/test/cam2"
