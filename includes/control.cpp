@@ -4,18 +4,18 @@
 
 #include "control.h"
 
-void Control::Initialize() {
+void Controls::Initialize() {
 
 }
 
-void Control::Start() {
+void Controls::Start() {
 
 }
 
-void Control::SwitchProtocol() {
+void Controls::SwitchProtocol() {
 
 }
 
-void Control::SwitchSubject() {
+void Controls::SwitchSubject() {
 
 }

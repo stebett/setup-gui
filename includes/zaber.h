@@ -6,6 +6,9 @@
 #define SETUP_GUI_ZABER_H
 
 
+#include <string>
+#include <ctime>
+
 class Zaber {
     enum Protocol {};
     bool connected;
@@ -17,9 +20,30 @@ class Zaber {
     float yNext;
     double timeToNext;
 
+
+public:
+    bool IsInitialized();
     void Connect();
     void Start();
     void LoadProtocol(Protocol);
+
+    bool IsRunning();
+
+    std::string GetProtocol();
+
+    int getX() const;
+
+    int getY() const;
+
+    int getNextY() const;
+
+    int getNextX() const;
+
+    std::time_t getTimeToNext() const;
+
+    void Initialize();
+
+    void Stop();
 };
 
 

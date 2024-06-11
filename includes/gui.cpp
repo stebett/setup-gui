@@ -5,109 +5,207 @@
 #include "gui.h"
 #include <imgui_impl_raylib.h>
 #include "directoryNode.h"
+#include "game.h"
 #include <format>
 #include <entt/entity/registry.hpp>
 
+constexpr ImVec4 red{1., 0., 0., 1.};
+constexpr ImVec4 green{0., 1., 0., 1.};
 ImGuiIO *Gui::m_io;
-DirectoryNode Gui::rootNode {};
 
-void imguiInstructions();
-void ImGuiShowRoot(const DirectoryNode& rootNode);
+void controlWindow(Game &game) {
+    ImGui::SeparatorText("Control Panel");
+    ImGui::BeginTable("table1", 2);
+    ImGui::TableNextRow();
+    ImGui::TableSetColumnIndex(0);
+    if (ImGui::Button("Start Experiment")) { game.controls.Start(); }
+    ImGui::TableSetColumnIndex(1);
+    if (ImGui::Button("Initialize Experiment")) { game.controls.Initialize(); }
+    ImGui::TableNextRow();
+    ImGui::TableSetColumnIndex(0);
+    if (ImGui::Button("Switch Protocol")) { game.controls.SwitchProtocol(); }
+    ImGui::TableSetColumnIndex(1);
+    if (ImGui::Button("Switch Subject")) { game.controls.SwitchSubject(); }
+    ImGui::EndTable();
+}
 
-void imguiWindowMain(ImGuiIO io, const DirectoryNode& rootNode) {
+void generalWindow(Game &game) {
+    ImGui::SeparatorText("General");
+    ImGui::Text("Subject: %s", game.generalView.getSubject().c_str());
+    ImGui::Text("Date: %s", game.generalView.getDate().c_str());
+}
+
+void statusWindow(Game &game) {
+    ImGui::SeparatorText("Status");
+    if (game.IsInitialized()) {
+        ImGui::TextColored({0., 1., 0., 1.}, "Experiment initialized");
+    } else {
+        ImGui::TextColored({1., 0., 0., 1.}, "Experiment not initialized");
+    }
+    if (game.IsRunning()) {
+        ImGui::TextColored({0., 1., 0., 1.}, "Experiment running");
+    } else {
+        ImGui::TextColored({1., 0., 0., 1.}, "Experiment not running");
+    }
+    if (game.IsRunning()) {
+        ImGui::Text("Time from start: %f", game.getStartTime());
+    } else {
+        ImGui::Text("Time from start: 0");
+    }
+}
+
+void zaberWindow(Game &game) {
+    ImGui::SeparatorText("Zaber");
+    if (game.zaber.IsInitialized()) {
+        ImGui::TextColored({0., 1., 0., 1.}, "Zaber initialized");
+    } else {
+        ImGui::TextColored({1., 0., 0., 1.}, "Zaber not Initialized");
+    }
+    if (game.zaber.IsRunning()) {
+        ImGui::TextColored({0., 1., 0., 1.}, "Zaber running");
+    } else {
+        ImGui::TextColored({1., 0., 0., 1.}, "Zaber not Running");
+    }
+    ImGui::Text("Protocol: %s", game.zaber.GetProtocol().c_str());
+    ImGui::Text("X position: %d", game.zaber.getX());
+    ImGui::Text("X position: %d", game.zaber.getY());
+    ImGui::Text("X position: %d", game.zaber.getNextX());
+    ImGui::Text("X position: %d", game.zaber.getNextY());
+    ImGui::Text("Time to next: %ld", game.zaber.getTimeToNext());
+
+}
+
+void ephysWindow(const Game &game) {
+    ImGui::SeparatorText("Ephys");
+    if (game.ephys.IsInitialized()) {
+        ImGui::TextColored({0., 1., 0., 1.}, "Ephys initialized");
+    } else {
+        ImGui::TextColored({1., 0., 0., 1.}, "Ephys not Initialized");
+    }
+    if (game.ephys.IsRunning()) {
+        ImGui::TextColored({0., 1., 0., 1.}, "Ephys running");
+    } else {
+        ImGui::TextColored({1., 0., 0., 1.}, "Ephys not Running");
+    }
+}
+
+void camerasWindow(const Game &game) {
+    ImGui::SeparatorText("Cameras");
+    if (game.camera1Frontal.IsInitialized()) {
+        ImGui::TextColored({0., 1., 0., 1.}, "Camera 1 frontal initialized");
+    } else {
+        ImGui::TextColored({1., 0., 0., 1.}, "Camera 1 frontal not Initialized");
+    }
+    if (game.camera2Lateral.IsInitialized()) {
+        ImGui::TextColored({0., 1., 0., 1.}, "Camera 2 lateral initialized");
+    } else {
+        ImGui::TextColored({1., 0., 0., 1.}, "Camera 2 lateral not Initialized");
+    }
+    if (game.camera1Frontal.IsRunning()) {
+        ImGui::TextColored({0., 1., 0., 1.}, "Camera 1 frontal running");
+    } else {
+        ImGui::TextColored({1., 0., 0., 1.}, "Camera 1 frontal not Running");
+    }
+    if (game.camera2Lateral.IsRunning()) {
+        ImGui::TextColored({0., 1., 0., 1.}, "Camera 2 lateral running");
+    } else {
+        ImGui::TextColored({1., 0., 0., 1.}, "Camera 2 lateral not Running");
+    }
+}
+
+void dataWindow(Game &game) {
+    ImGui::SeparatorText("Data control");
+    static int cam1Files = game.dataView.CointainedFiles(game.dataView.cam1Path);
+    static int cam2Files = game.dataView.CointainedFiles(game.dataView.cam2Path);
+    static int ephysFiles = game.dataView.CointainedFiles(game.dataView.ephysPath);
+    static ImVec4 color{};
+
+    color = cam1Files > 0 ? green : red;
+    ImGui::Text("Camera 1 Frontal path: %s", game.dataView.cam1Path.c_str());
+    ImGui::TextColored(color, "Number offiles contained: %i", cam1Files);
+    ImGui::Text("Expected number of files: %i", static_cast<int>(game.getStartTime()) * 500); //TODO fix this )
+
+    color = cam2Files > 0 ? green : red;
+    ImGui::Text("Camera 2 Lateral path: %s", game.dataView.cam2Path.c_str());
+    ImGui::TextColored(color, "Number offiles contained: %i", cam2Files);
+    ImGui::Text("Expected number of files: %i", static_cast<int>(game.getStartTime()) * 500); //TODO fix this )
+
+    color = ephysFiles > 0 ? green : red;
+    ImGui::Text("Ephys path: %s", game.dataView.ephysPath.c_str());
+    ImGui::TextColored(color, "Number offiles contained: %i", ephysFiles);
+    ImGui::Text("Expected number of files: %i", static_cast<int>(game.getStartTime()) * 500); //TODO fix this )
+}
+
+void manualWindow(Game &game) {
+    ImGui::SeparatorText("Manual control");
+
+    if (ImGui::Button("Zaber Initialize")) {
+        game.zaber.Initialize();
+    }
+    if (ImGui::Button("Zaber Start")) {
+        game.zaber.Start();
+    }
+    if (ImGui::Button("Zaber Stop")) {
+        game.zaber.Stop();
+    }
+    if (ImGui::Button("Ephys Initialize")) {
+        game.ephys.Initialize();
+    }
+    if (ImGui::Button("Ephys Start")) {
+        game.ephys.Start();
+    }
+    if (ImGui::Button("Ephys Stop")) {
+        game.ephys.Stop();
+    }
+    if (ImGui::Button("Cameras 1 Frontal Initialize")) {
+        game.camera1Frontal.Initialize();
+    }
+    if (ImGui::Button("Camera 1 Frontal Start")) {
+        game.camera1Frontal.Start();
+    }
+    if (ImGui::Button("Cameras 1 Frontal Stop")) {
+        game.camera1Frontal.Stop();
+    }
+    if (ImGui::Button("Cameras 2 Lateral Initialize")) {
+        game.camera2Lateral.Initialize();
+    }
+    if (ImGui::Button("Camera 2 Lateral Start")) {
+        game.camera2Lateral.Start();
+    }
+    if (ImGui::Button("Cameras 2 Lateral Stop")) {
+        game.camera2Lateral.Stop();
+    }
+    if (ImGui::Button("Compress Videos")) {}
+    if (ImGui::Button("Copy Ephys")) {}
+    if (ImGui::Button("Copy Metadata")) {}
+}
+
+void imguiWindowMain(ImGuiIO io, Game &game) {
     static bool show_demo_window = false;
-    static bool show_instructions = false;
-    static bool show_root = true;
 
     ImGui::Begin("Main");
 
+    ImGui::BeginTable("tableMain", 2);
+    ImGui::TableNextRow();
+    ImGui::TableSetColumnIndex(0);
+    controlWindow(game);
+    generalWindow(game);
+    statusWindow(game);
+    zaberWindow(game);
+    camerasWindow(game);
+    ImGui::TableSetColumnIndex(1);
+    dataWindow(game);
+    manualWindow(game);
 
+    ImGui::SeparatorText("Extra Options");
     ImGui::Checkbox("Demo Window", &show_demo_window);
     if (show_demo_window)
         ImGui::ShowDemoWindow(&show_demo_window);
-
-    ImGui::Checkbox("show_instructions", &show_instructions);
-    if (show_instructions)
-        imguiInstructions();
-
-    ImGui::Checkbox("show_root", &show_root);
-    if (show_root)
-        ImGuiShowRoot(rootNode);
+    ImGui::EndTable();
 
 //    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / m_io.Framerate, m_io.Framerate);
     ImGui::End();
 }
-
-void imguiInstructions() {
-
-    ImGui::Begin("Instructions");
-    ImGui::SeparatorText("Hotkeys");
-
-    ImGui::Text("Q per chiudere");
-    ImGui::Text("R per restartare");
-    ImGui::Text("P per pausare");
-    ImGui::Text("I per togglare inventario");
-    ImGui::Text("O per togglare attributi");
-    ImGui::Text("LClick per attaccare");
-    ImGui::Text("RClick per selezionare");
-    ImGui::End();
-}
-
-void RecursivelyDisplayDirectoryNode(const DirectoryNode& parentNode)
-{
-    ImGui::PushID(&parentNode);
-    if (parentNode.isDirectory)
-    {
-        if (ImGui::TreeNodeEx(parentNode.fileName.c_str(), ImGuiTreeNodeFlags_SpanFullWidth))
-        {
-            for (const DirectoryNode& childNode : parentNode.children)
-                RecursivelyDisplayDirectoryNode(childNode);
-            ImGui::TreePop();
-        }
-    }
-    else
-    {
-        if (ImGui::TreeNodeEx(parentNode.fileName.c_str(), ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_SpanFullWidth))
-        {
-            // ... handle file click interaction
-        }
-    }
-    ImGui::PopID();
-}
-
-void ImGuiShowRoot(const DirectoryNode& rootNode)
-{
-    if (ImGui::Begin("Example Directory Tree Window", nullptr, ImGuiWindowFlags_NoSavedSettings))
-        RecursivelyDisplayDirectoryNode(rootNode);
-    ImGui::End();
-}
-
-
-//void imguiSubAttributesStartValues() {
-//    ImGui::Begin("Attribute startValues");
-//    if (ImGui::Button("Save")) { Params::SaveAttributeParameters(); };
-//    int n = {0};
-//    for (auto subattr: AttributeConstants::subAttributeVec) {
-//        ImGui::PushID(n);
-//        bool disableR = Params::attributes.subAttrAtStart[subattr] ==
-//                        Params::attributesOriginal.subAttrAtStart[subattr];
-//        if (disableR) ImGui::BeginDisabled(true);
-//        if (ImGui::Button("R")) {
-//            Params::attributes.subAttrAtStart[subattr] = Params::attributesOriginal.subAttrAtStart[subattr];
-//        };
-//        if (disableR) ImGui::EndDisabled();
-//        ImGui::SameLine();
-//        ImGui::DragFloat(AttributeConstants::subAttributeString[subattr],
-//                         &Params::attributes.subAttrAtStart[subattr],
-//                         0.1f, 0, 30);
-//        ImGui::PopID();
-//        n++;
-//    }
-//
-//    ImGui::End();
-//}
-
-
 
 
 void Gui::Instantiate() {
@@ -124,8 +222,7 @@ void Gui::Instantiate() {
 
 }
 
-void Gui::Update(DirectoryNode rootNode_) {
-    rootNode = rootNode_;
+void Gui::Update(Game &game) {
 
     ImGui_ImplRaylib_ProcessEvents();
 
@@ -133,7 +230,7 @@ void Gui::Update(DirectoryNode rootNode_) {
     ImGui_ImplRaylib_NewFrame();
     ImGui::NewFrame();
 
-    imguiWindowMain(*m_io, rootNode);
+    imguiWindowMain(*m_io, game);
 
 // Rendering
     ImGui::Render();

@@ -9,15 +9,15 @@
 #include <entt/entity/registry.hpp>
 #include <imgui.h>
 #include "directoryNode.h"
+#include "game.h"
 
 class Gui {
     static ImGuiIO *m_io;
-    static DirectoryNode rootNode;
 
 public:
     static void Instantiate();
 
-    static void Update(DirectoryNode);
+    static void Update(Game&);
 
     static void Draw();
 

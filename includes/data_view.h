@@ -15,7 +15,7 @@ public:
     std::filesystem::path ephysPath;
     std::filesystem::path sessionPath;
 
-    int CointainedFiles(std::filesystem::path);
+    int CointainedFiles(std::filesystem::path) const;
     int CointainedDirectories(std::filesystem::path);
 };
 

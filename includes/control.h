@@ -6,7 +6,8 @@
 #define SETUP_GUI_CONTROL_H
 
 
-class Control {
+class Controls {
+public:
     void Initialize();
     void Start();
     void SwitchProtocol();

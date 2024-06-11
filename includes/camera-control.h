@@ -2,11 +2,12 @@
 // Created by ginko on 11/06/24.
 //
 
-#ifndef SETUP_GUI_EPHYS_H
-#define SETUP_GUI_EPHYS_H
+#ifndef SETUP_GUI_CAMERA_CONTROL_H
+#define SETUP_GUI_CAMERA_CONTROL_H
 
 
-class Ephys {
+
+class CameraController {
     bool connected{false};
     bool running{false};
 
@@ -21,4 +22,5 @@ public:
 };
 
 
-#endif //SETUP_GUI_EPHYS_H
+
+#endif //SETUP_GUI_CAMERA_CONTROL_H

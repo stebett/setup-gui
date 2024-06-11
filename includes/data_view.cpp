@@ -4,7 +4,7 @@
 
 #include "data_view.h"
 
-int DataView::CointainedFiles(std::filesystem::path) {
+int DataView::CointainedFiles(std::filesystem::path) const {
     return 0;
 }
 
