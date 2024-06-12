@@ -68,9 +68,9 @@ void zaberWindow(Game &game) {
     }
     ImGui::Text("Protocol: %s", game.zaber.GetProtocol().c_str());
     ImGui::Text("X position: %d", game.zaber.getX());
-    ImGui::Text("X position: %d", game.zaber.getY());
-    ImGui::Text("X position: %d", game.zaber.getNextX());
-    ImGui::Text("X position: %d", game.zaber.getNextY());
+    ImGui::Text("Y position: %d", game.zaber.getY());
+    ImGui::Text("Next X position: %d", game.zaber.getNextX());
+    ImGui::Text("Next Y position: %d", game.zaber.getNextY());
     ImGui::Text("Time to next: %ld", game.zaber.getTimeToNext());
 
 }
@@ -122,17 +122,17 @@ void dataWindow(Game &game) {
 
     color = cam1Files > 0 ? green : red;
     ImGui::Text("Camera 1 Frontal path: %s", game.dataView.cam1Path.c_str());
-    ImGui::TextColored(color, "Number offiles contained: %i", cam1Files);
+    ImGui::TextColored(color, "Number of files contained: %i", cam1Files);
     ImGui::Text("Expected number of files: %i", static_cast<int>(game.getStartTime()) * 500); //TODO fix this )
 
     color = cam2Files > 0 ? green : red;
     ImGui::Text("Camera 2 Lateral path: %s", game.dataView.cam2Path.c_str());
-    ImGui::TextColored(color, "Number offiles contained: %i", cam2Files);
+    ImGui::TextColored(color, "Number of files contained: %i", cam2Files);
     ImGui::Text("Expected number of files: %i", static_cast<int>(game.getStartTime()) * 500); //TODO fix this )
 
     color = ephysFiles > 0 ? green : red;
     ImGui::Text("Ephys path: %s", game.dataView.ephysPath.c_str());
-    ImGui::TextColored(color, "Number offiles contained: %i", ephysFiles);
+    ImGui::TextColored(color, "Number of files contained: %i", ephysFiles);
     ImGui::Text("Expected number of files: %i", static_cast<int>(game.getStartTime()) * 500); //TODO fix this )
 }
 
@@ -212,12 +212,14 @@ void Gui::Instantiate() {
     ImGui::CreateContext();
     m_io = &ImGui::GetIO();
     m_io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    m_io->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
     ImGui::StyleColorsDark();
     ImGui_ImplRaylib_Init();
 
     m_io->Fonts->AddFontDefault();
+
+    ImFont* font_title = m_io -> Fonts->AddFontFromFileTTF("../AnonymousPro.ttf", 15.0f, NULL, m_io -> Fonts->GetGlyphRangesDefault());
+    IM_ASSERT(font_title != nullptr);
     Imgui_ImplRaylib_BuildFontAtlas();
 
 }
