@@ -6,9 +6,7 @@
 #define GUI_MANAGER_H
 
 
-#include <entt/entity/registry.hpp>
 #include <imgui.h>
-#include "directoryNode.h"
 #include "game.h"
 
 class Gui {

@@ -7,7 +7,6 @@
 
 #include <string>
 #include "toml++/toml.hpp"
-#include "directoryNode.h"
 
 constexpr char const *metadataPath{"metadata.toml"};
 
@@ -34,7 +33,6 @@ public:
     explicit Metadata(int ID_);
 
     void StartExperiment();
-    DirectoryNode getRootNode() const;
 
 
 };

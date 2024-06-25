@@ -4,10 +4,8 @@
 
 #include "gui.h"
 #include <imgui_impl_raylib.h>
-#include "directoryNode.h"
 #include "game.h"
 #include <format>
-#include <entt/entity/registry.hpp>
 
 constexpr ImVec4 red{1., 0., 0., 1.};
 constexpr ImVec4 green{0., 1., 0., 1.};

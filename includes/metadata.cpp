@@ -51,7 +51,3 @@ Metadata::Metadata(int ID_) : ID(ID_) {
 void Metadata::StartExperiment() {
 
 }
-
-DirectoryNode Metadata::getRootNode() const {
-    return CreateDirectoryNodeTreeFromPath(recordingPaths.dataRootPath);
-}
