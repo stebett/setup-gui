@@ -70,7 +70,7 @@ void zaberWindow(Game &game) {
     ImGui::Text("Next X position: %d", game.zaber.getNextX());
     ImGui::Text("Next Y position: %d", game.zaber.getNextY());
     ImGui::Text("Time to next: %ld", game.zaber.getTimeToNext());
-
+    ImGui::Text("Last answer: %s", game.zaber.GetAnswer());
 }
 
 void ephysWindow(const Game &game) {
@@ -143,6 +143,14 @@ void manualWindow(Game &game) {
     if (ImGui::Button("Zaber Start")) {
         game.zaber.Start();
     }
+    static char message[32] = "";
+    ImGui::InputText("Message", message, 32);
+    if (ImGui::Button("Zaber Send Message")) {
+        game.zaber.sendMessage(message);
+    }
+    if (ImGui::Button("Zaber Get X")) {
+        game.zaber.getX();
+    }
     if (ImGui::Button("Zaber Stop")) {
         game.zaber.Stop();
     }
@@ -173,9 +181,12 @@ void manualWindow(Game &game) {
     if (ImGui::Button("Cameras 2 Lateral Stop")) {
         game.camera2Lateral.Stop();
     }
-    if (ImGui::Button("Compress Videos")) {}
-    if (ImGui::Button("Copy Ephys")) {}
-    if (ImGui::Button("Copy Metadata")) {}
+    if (ImGui::Button("Compress Videos")) {
+    }
+    if (ImGui::Button("Copy Ephys")) {
+    }
+    if (ImGui::Button("Copy Metadata")) {
+    }
 }
 
 void imguiWindowMain(ImGuiIO io, Game &game) {
@@ -201,7 +212,7 @@ void imguiWindowMain(ImGuiIO io, Game &game) {
         ImGui::ShowDemoWindow(&show_demo_window);
     ImGui::EndTable();
 
-//    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / m_io.Framerate, m_io.Framerate);
+    //    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / m_io.Framerate, m_io.Framerate);
     ImGui::End();
 }
 
@@ -209,30 +220,29 @@ void imguiWindowMain(ImGuiIO io, Game &game) {
 void Gui::Instantiate() {
     ImGui::CreateContext();
     m_io = &ImGui::GetIO();
-    m_io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    m_io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
 
     ImGui::StyleColorsDark();
     ImGui_ImplRaylib_Init();
 
     m_io->Fonts->AddFontDefault();
 
-    ImFont* font_title = m_io -> Fonts->AddFontFromFileTTF("../AnonymousPro.ttf", 15.0f, NULL, m_io -> Fonts->GetGlyphRangesDefault());
+    ImFont *font_title = m_io->Fonts->AddFontFromFileTTF("../AnonymousPro.ttf", 15.0f, NULL,
+                                                         m_io->Fonts->GetGlyphRangesDefault());
     IM_ASSERT(font_title != nullptr);
     Imgui_ImplRaylib_BuildFontAtlas();
-
 }
 
 void Gui::Update(Game &game) {
-
     ImGui_ImplRaylib_ProcessEvents();
 
-// Start the Dear ImGui frame
+    // Start the Dear ImGui frame
     ImGui_ImplRaylib_NewFrame();
     ImGui::NewFrame();
 
     imguiWindowMain(*m_io, game);
 
-// Rendering
+    // Rendering
     ImGui::Render();
 }
 
@@ -243,5 +253,4 @@ void Gui::Draw() {
 Gui::~Gui() {
     ImGui_ImplRaylib_Shutdown();
     ImGui::DestroyContext();
-
 }

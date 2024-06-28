@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION 3.28)
 project(setup_gui)
 
 set(CMAKE_CXX_STANDARD 20)
-find_package(boost)
-find_package(spdlog)
-find_package(imgui)
 find_package(tomlplusplus)
+find_package(Boost)
+find_package(imgui)
+find_package(spdlog)
 
 # Dependencies
 set(RAYLIB_VERSION 5.0)
@@ -49,3 +49,7 @@ target_link_libraries(${EXEC}
         imgui::imgui
         raylib
         spdlog::spdlog)
+
+if(MINGW)
+    target_link_libraries(${EXEC} ws2_32)
+endif()
