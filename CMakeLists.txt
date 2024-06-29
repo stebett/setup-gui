@@ -50,7 +50,8 @@ add_library(Modules)
 target_sources(Modules
         PUBLIC
         FILE_SET CXX_MODULES FILES
-        includes/compress_videos.ixx)
+        includes/compress_videos.ixx
+        includes/session_control.ixx)
 
 add_executable(${EXEC} main.cpp ${SOURCES})
 target_link_libraries(${EXEC}

@@ -6,12 +6,13 @@
 #define SETUP_GUI_GAME_H
 
 
-#include "general_view.h"
 #include "control.h"
 #include "zaber.h"
 #include "data_view.h"
 #include "ephys.h"
 #include "camera-control.h"
+
+import session_control;
 
 class Game {
     bool initialized{false};
@@ -20,7 +21,7 @@ class Game {
 
 public:
     Controls controls;
-    GeneralView generalView;
+    Session session;
     Zaber zaber;
     DataView dataView;
     Ephys ephys;

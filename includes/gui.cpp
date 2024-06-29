@@ -8,6 +8,7 @@
 
 
 import compress_videos;
+import session_control;
 
 constexpr ImVec4 red{1., 0., 0., 1.};
 constexpr ImVec4 green{0., 1., 0., 1.};
@@ -25,14 +26,28 @@ void controlWindow(Game &game) {
     ImGui::TableSetColumnIndex(0);
     if (ImGui::Button("Switch Protocol")) { game.controls.SwitchProtocol(); }
     ImGui::TableSetColumnIndex(1);
-    if (ImGui::Button("Switch Subject")) { game.controls.SwitchSubject(); }
+    if (ImGui::Button("Switch Subject")) {
+        ImGui::OpenPopup("Choose Subject");
+    }
+    if (ImGui::BeginPopupModal("Choose Subject", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize)) {
+        for (const auto subject: subjectList) {
+            ImGui::PushID(subject);
+            if (ImGui::Button(Session::enum2String(subject))) {
+                game.session.SwitchSubject(subject);
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::PopID();
+        }
+        ImGui::EndPopup();
+    }
     ImGui::EndTable();
 }
 
-void generalWindow(Game &game) {
+void generalWindow(Game const &game) {
     ImGui::SeparatorText("General");
-    ImGui::Text("Subject: %s", game.generalView.getSubject().c_str());
-    ImGui::Text("Date: %s", game.generalView.getDate().c_str());
+    static const auto date = Session::getDatePretty();
+    ImGui::Text("Subject: %s", game.session.getSubject());
+    ImGui::Text("Date: %s", date.c_str());
 }
 
 void statusWindow(Game &game) {
