@@ -5,7 +5,7 @@
 #include "gui.h"
 #include <imgui_impl_raylib.h>
 #include "game.h"
-#include <format>
+
 
 import compress_videos;
 
@@ -113,27 +113,27 @@ void camerasWindow(const Game &game) {
     }
 }
 
-void dataWindow(Game &game) {
+void dataWindow(Game const &game) {
     ImGui::SeparatorText("Data control");
-    static int cam1Files = game.dataView.CointainedFiles(game.dataView.cam1Path);
-    static int cam2Files = game.dataView.CointainedFiles(game.dataView.cam2Path);
-    static int ephysFiles = game.dataView.CointainedFiles(game.dataView.ephysPath);
+    static int cam1Files = game.dataView.CointainedElements(game.dataView.cam1Path);
+    static int cam2Files = game.dataView.CointainedElements(game.dataView.cam2Path);
+    static int ephysFiles = game.dataView.CointainedElements(game.dataView.ephysRecordingPath);
     static ImVec4 color{};
 
     color = cam1Files > 0 ? green : red;
-    ImGui::Text("Camera 1 Frontal path: %s", game.dataView.cam1Path.c_str());
+    ImGui::Text("Camera 1 Frontal path:\n\t%s", game.dataView.cam1Path.string().c_str());
     ImGui::TextColored(color, "Number of files contained: %i", cam1Files);
-    ImGui::Text("Expected number of files: %i", static_cast<int>(game.getStartTime()) * 500); //TODO fix this )
+    // ImGui::Text("Expected number of files: %i", static_cast<int>(game.getStartTime()) * 500); //TODO fix this )
 
     color = cam2Files > 0 ? green : red;
-    ImGui::Text("Camera 2 Lateral path: %s", game.dataView.cam2Path.c_str());
+    ImGui::Text("Camera 2 Lateral path:\n\t%s", game.dataView.cam2Path.string().c_str());
     ImGui::TextColored(color, "Number of files contained: %i", cam2Files);
-    ImGui::Text("Expected number of files: %i", static_cast<int>(game.getStartTime()) * 500); //TODO fix this )
+    // ImGui::Text("Expected number of files: %i", static_cast<int>(game.getStartTime()) * 500); //TODO fix this )
 
     color = ephysFiles > 0 ? green : red;
-    ImGui::Text("Ephys path: %s", game.dataView.ephysPath.c_str());
+    ImGui::Text("Ephys path:\n\t%s", game.dataView.ephysRecordingPath.string().c_str());
     ImGui::TextColored(color, "Number of files contained: %i", ephysFiles);
-    ImGui::Text("Expected number of files: %i", static_cast<int>(game.getStartTime()) * 500); //TODO fix this )
+    // ImGui::Text("Expected number of files: %i", static_cast<int>(game.getStartTime()) * 500); //TODO fix this )
 }
 
 void manualWindow(Game &game) {
@@ -197,7 +197,7 @@ void manualWindow(Game &game) {
     }
     const ImVec2 center = ImGui::GetMainViewport()->GetCenter();
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-    if (ImGui::BeginPopupModal("Result", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+    if (ImGui::BeginPopupModal("Result", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         ImGui::Text(result);
         if (ImGui::Button("OK", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
         ImGui::SetItemDefaultFocus();
@@ -208,8 +208,11 @@ void manualWindow(Game &game) {
 
 void imguiWindowMain(ImGuiIO io, Game &game) {
     static bool show_demo_window = false;
+    ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
+    constexpr ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove |
+                                              ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse;
 
-    ImGui::Begin("Main");
+    ImGui::Begin("Main", nullptr, window_flags);
 
     ImGui::BeginTable("tableMain", 2);
     ImGui::TableNextRow();
@@ -244,7 +247,7 @@ void Gui::Instantiate() {
 
     m_io->Fonts->AddFontDefault();
 
-    ImFont *font_title = m_io->Fonts->AddFontFromFileTTF("../AnonymousPro.ttf", 15.0f, NULL,
+    ImFont *font_title = m_io->Fonts->AddFontFromFileTTF("../AnonymousPro.ttf", 15.0f, nullptr,
                                                          m_io->Fonts->GetGlyphRangesDefault());
     IM_ASSERT(font_title != nullptr);
     Imgui_ImplRaylib_BuildFontAtlas();

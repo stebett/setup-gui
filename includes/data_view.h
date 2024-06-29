@@ -5,19 +5,18 @@
 #ifndef SETUP_GUI_DATA_VIEW_H
 #define SETUP_GUI_DATA_VIEW_H
 
-
 #include <filesystem>
 
 class DataView {
 public:
     std::filesystem::path cam1Path;
     std::filesystem::path cam2Path;
-    std::filesystem::path ephysPath;
+    std::filesystem::path ephysRecordingPath;
+    std::filesystem::path dataRootPath;
     std::filesystem::path sessionPath;
 
-    int CointainedFiles(std::filesystem::path) const;
-    int CointainedDirectories(std::filesystem::path);
+    DataView();
+    static int CointainedElements(const std::filesystem::path &directory_path);
 };
-
 
 #endif //SETUP_GUI_DATA_VIEW_H

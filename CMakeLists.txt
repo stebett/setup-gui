@@ -23,8 +23,8 @@ if (NOT raylib_FOUND) # If there's none, fetch and build raylib
         FetchContent_Populate(raylib)
         set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE) # don't build the supplied examples
         add_subdirectory(${raylib_SOURCE_DIR} ${raylib_BINARY_DIR})
-    endif()
-endif()
+    endif ()
+endif ()
 
 
 set(EXEC setup-control)
@@ -59,10 +59,14 @@ target_link_libraries(${EXEC}
         imgui::imgui
         raylib
         spdlog::spdlog
-        Modules)
+        Modules
+)
 
-if(MINGW)
+if (MINGW)
     target_link_libraries(${EXEC} ws2_32)
-endif()
+endif ()
 
-target_link_libraries(Modules spdlog::spdlog)
+target_link_libraries(Modules
+        spdlog::spdlog
+        tomlplusplus::tomlplusplus
+)
