@@ -6,7 +6,7 @@
 #include <iostream>
 #include <boost/array.hpp>
 #include <spdlog/spdlog.h>
-
+#include <fmt/core.h>
 
 // Function to read data from the serial port
 std::string readFromSerialPort(boost::asio::serial_port &serial) {
@@ -62,7 +62,7 @@ bool SelectComPorts() //added function to find the present serial
 }
 
 // Function to configure the serial port
-bool Zaber::Connect(boost::asio::serial_port &serial,
+bool Zaber::connect(boost::asio::serial_port &serial,
                     const std::string &portname,
                     unsigned int baud_rate) {
     try {
@@ -83,23 +83,24 @@ bool Zaber::Connect(boost::asio::serial_port &serial,
 }
 
 
-void Zaber::Start() {
-
+void Zaber::start() {
+    running = true;
 }
 
-void Zaber::LoadProtocol(Zaber::Protocol) {
+void Zaber::loadProtocol() {
+    protocol.Load();
 }
 
-bool Zaber::IsInitialized() {
+bool Zaber::isInitialized() const {
     return initialized;
 }
 
-std::string_view Zaber::GetAnswer() {
-    return answer;
+const char *Zaber::getAnswer() const {
+    return answer.c_str();
 }
 
-bool Zaber::IsRunning() {
-    return false;
+bool Zaber::isRunning() const {
+    return running;
 }
 
 std::string read(boost::asio::serial_port &serial) {
@@ -111,69 +112,51 @@ std::string read(boost::asio::serial_port &serial) {
 
         std::istream is(&buf);
         std::getline(is, response);
-    } catch (boost::system::system_error& e) {
+    } catch (boost::system::system_error &e) {
         std::cerr << "Error reading from serial port: " << e.what() << std::endl;
     }
 
     return response;
 }
 
-std::string readLine()
-{
-    unsigned int max_length = 5000;
-    char *message {};
-    unsigned char c_sum = 0;               // assuming 8-bit chars
-    char *p = message + 1;                 // skip the type character
-
-    if (strlen(message) + 6 < max_length)  // is there room for the checksum?
-    {
-        while (*p != 0x00)
-        {
-            c_sum += (unsigned char)*p++;  // calculate the checksum
-        }
-
-        c_sum = ~c_sum + 1;                // negate, increment and char size truncates
-
-        // add the checksum to the message
-        sprintf(p, ":%02X\r\n", c_sum);
-        return message;
-    }
-
-    return "";
-}
 int Zaber::getX() {
-    static int last_x {};
+    static int last_x{};
     if (!initialized) return 0;
-    if (!moved) return last_x;
+    if (!movedX) return last_x;
 
     sendMessage("/2 1 get pos");
     const auto answer_pos = answer.find_last_of(' ');
-    last_x =  std::atoi(answer.substr(answer_pos).c_str());
-    moved = false;
+    last_x = std::atoi(answer.substr(answer_pos).c_str());
+    movedX = false;
+    protocol.current_x = last_x;
+    xNext = protocol.getNextX();
+
     return last_x;
 }
 
 int Zaber::getY() {
-    static int last_x {};
+    static int last_y{};
     if (!initialized) return 0;
-    if (!moved) return last_x;
+    if (!movedY) return last_y;
+    yNext = protocol.getNextY();
 
     sendMessage("/1 1 get pos");
     const auto answer_pos = answer.find_last_of(' ');
-    last_x =  std::atoi(answer.substr(answer_pos).c_str());
-    moved = false;
-    return last_x;}
+    last_y = std::atoi(answer.substr(answer_pos).c_str());
+    movedY = false;
+    return last_y;
+}
 
 int Zaber::getNextY() const {
-    return 0;
+    return yNext;
 }
 
 int Zaber::getNextX() const {
-    return 0;
+    return xNext;
 }
 
-std::string Zaber::GetProtocol() {
-    return std::string();
+std::string Zaber::getProtocol() {
+    return {};
 }
 
 void Zaber::sendMessage(const std::string &message) {
@@ -183,8 +166,18 @@ void Zaber::sendMessage(const std::string &message) {
     spdlog::info("[Zaber] [Read] {}", answer);
 }
 
-std::time_t Zaber::getTimeToNext() const {
-    return 0;
+void Zaber::moveX(int position) {
+    sendMessage(fmt::format("/2 1 move abs {}", position));
+    movedX = true;
+}
+
+void Zaber::moveY(int position) {
+    sendMessage(fmt::format("/1 1 move abs {}", position));
+    movedY = true;
+}
+
+float Zaber::getSecondsToNext() const {
+    return protocol.getInterval() - timer.Elapsed();
 }
 
 Zaber::Zaber(): io(),
@@ -192,14 +185,27 @@ Zaber::Zaber(): io(),
     spdlog::info("[Zaber] [Constructor] Initializing");
 }
 
-void Zaber::Initialize() {
+void Zaber::initialize() {
     spdlog::info("[Zaber] Initializing");
     SelectComPorts();
 
-    if (Connect(serial, "COM3", 115200)) {
+    if (connect(serial, "COM3", 115200)) {
         spdlog::info("[Zaber] Initialization successfull");
         initialized = true; // TODO error handling
     }
+    spdlog::info("[Zaber] Loading protocol");
+    loadProtocol();
+
+    spdlog::info("[Zaber] Moving to start ({}, {})", protocol.start_x, protocol.start_y);
+    sendMessage(fmt::format("/set maxspeed {}", 200000));
+    moveX(protocol.start_x);
+    moveY(protocol.start_y);
+    sleep(2);
+    spdlog::info("[Zaber] Setting speed to {}", protocol.speed);
+    sendMessage(fmt::format("/set maxspeed {}", protocol.speed));
+    movedX = true;
+    movedY = true;
+    timer.Reset();
 }
 
 Zaber::~Zaber() {
@@ -211,9 +217,18 @@ Zaber::~Zaber() {
     }
 }
 
-void Zaber::Stop() {
+void Zaber::stop() {
     sendMessage("/1 1 stop");
     sendMessage("/2 1 stop");
+}
+
+void Zaber::Update() {
+    if (!running) return;
+    if (timer.Elapsed() <= protocol.getInterval()) return;
+
+    moveX(xNext);
+    moveY(yNext);
+    timer.Reset();
 }
 
 

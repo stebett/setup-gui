@@ -5,18 +5,19 @@
 #include "framerateManager.h"
 #include <algorithm>
 
-const int screenWidth = 800;
-const int screenHeight = 800;
+constexpr int screenWidth = 800;
+constexpr int screenHeight = 800;
 
 int main() {
     InitWindow(screenWidth, screenHeight, "Setup Controller");
-    Metadata metadata = Metadata{17};
+    auto metadata = Metadata{17};
     Gui::Instantiate();
     FramerateManager framerateManager;
     Game game{};
 
 
     while (!WindowShouldClose()) {
+        game.zaber.Update();
         Gui::Update(game);
         BeginDrawing();
         ClearBackground(DARKGRAY);

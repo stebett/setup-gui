@@ -40,6 +40,11 @@ file(GLOB_RECURSE INCLUDE_SOURCES ${INCLUDE}/*.cpp)
 set(SOURCES
         ${rlImGui_SOURCES}
         ${INCLUDE_SOURCES}
+        includes/protocols.cpp
+        includes/protocols.h
+        includes/protocols.h
+        includes/timer.h
+        includes/timer.h
 )
 
 add_executable(${EXEC} main.cpp ${SOURCES})

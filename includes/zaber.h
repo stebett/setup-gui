@@ -7,71 +7,80 @@
 
 
 #include <string>
-#include <ctime>
 #if defined(_WIN32)           // Raylib workaround
-    #define NOGDI             // All GDI defines and routines
-    #define NOUSER            // All USER defines and routines
+#define NOGDI             // All GDI defines and routines
+#define NOUSER            // All USER defines and routines
 #endif
 
 #include <boost/asio.hpp>
 
 #if defined(_WIN32)           // raylib uses these names as function parameters
-    #undef near
-    #undef far
+#undef near
+#undef far
 #endif
 
-class Zaber {
-    enum Protocol {
-    };
+#include "protocols.h"
+#include "timer.h"
 
-    Protocol protocol;
+class Zaber {
+
+
+    AdaptationProtocol protocol;
 
     bool initialized{false};
     bool running{false};
-    bool moved{true};
-    unsigned int x{0};
-    unsigned int y{0};
-    unsigned int xNext{0};
-    unsigned int yNext{0};
+    bool movedX{true};
+    bool movedY{true};
+
+     int x{0};
+     int y{0};
+     int xNext{0};
+     int yNext{0};
     double timeToNext{0};
     boost::asio::io_service io;
     boost::asio::serial_port serial;
-    std::string answer {};
+    std::string answer{};
+    Timer timer {};
 
 public:
     Zaber();
+
     ~Zaber();
+    void initialize();
 
-    bool IsInitialized();
-    std::string_view GetAnswer();
+    [[nodiscard]] bool isInitialized() const;
 
-    bool Connect(boost::asio::serial_port &serial,
-                 const std::string &portname,
-                 unsigned int baud_rate);
+    [[nodiscard]] const char *getAnswer() const;
 
-    void Start();
+    static bool connect(boost::asio::serial_port &serial,
+                        const std::string &portname,
+                        unsigned int baud_rate);
 
-    void LoadProtocol(Protocol);
+    void start();
 
-    bool IsRunning();
+    void loadProtocol();
 
-    std::string GetProtocol();
+    [[nodiscard]] bool isRunning() const;
+
+    static std::string getProtocol();
 
     void sendMessage(const std::string &message);
+    void moveX(int position);
+    void moveY(int position);
 
-    int getX() ;
+    int getX();
 
-    int getY() ;
+    int getY();
 
-    int getNextY() const;
+    [[nodiscard]] int getNextY() const;
 
-    int getNextX() const;
+    [[nodiscard]] int getNextX() const;
 
-    std::time_t getTimeToNext() const;
+    [[nodiscard]] float getSecondsToNext() const;
 
-    void Initialize();
 
-    void Stop();
+    void stop();
+    void Update();
 };
 
 

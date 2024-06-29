@@ -54,23 +54,23 @@ void statusWindow(Game &game) {
 
 void zaberWindow(Game &game) {
     ImGui::SeparatorText("Zaber");
-    if (game.zaber.IsInitialized()) {
+    if (game.zaber.isInitialized()) {
         ImGui::TextColored({0., 1., 0., 1.}, "Zaber initialized");
     } else {
         ImGui::TextColored({1., 0., 0., 1.}, "Zaber not Initialized");
     }
-    if (game.zaber.IsRunning()) {
+    if (game.zaber.isRunning()) {
         ImGui::TextColored({0., 1., 0., 1.}, "Zaber running");
     } else {
         ImGui::TextColored({1., 0., 0., 1.}, "Zaber not Running");
     }
-    ImGui::Text("Protocol: %s", game.zaber.GetProtocol().c_str());
+    ImGui::Text("Protocol: %s", game.zaber.getProtocol().c_str());
     ImGui::Text("X position: %d", game.zaber.getX());
     ImGui::Text("Y position: %d", game.zaber.getY());
     ImGui::Text("Next X position: %d", game.zaber.getNextX());
     ImGui::Text("Next Y position: %d", game.zaber.getNextY());
-    ImGui::Text("Time to next: %ld", game.zaber.getTimeToNext());
-    ImGui::Text("Last answer: %s", game.zaber.GetAnswer());
+    ImGui::Text("Time to next: %f", game.zaber.getSecondsToNext());
+    ImGui::Text("Last answer: %s", game.zaber.getAnswer());
 }
 
 void ephysWindow(const Game &game) {
@@ -138,10 +138,10 @@ void manualWindow(Game &game) {
     ImGui::SeparatorText("Manual control");
 
     if (ImGui::Button("Zaber Initialize")) {
-        game.zaber.Initialize();
+        game.zaber.initialize();
     }
     if (ImGui::Button("Zaber Start")) {
-        game.zaber.Start();
+        game.zaber.start();
     }
     static char message[32] = "";
     ImGui::InputText("Message", message, 32);
@@ -152,7 +152,7 @@ void manualWindow(Game &game) {
         game.zaber.getX();
     }
     if (ImGui::Button("Zaber Stop")) {
-        game.zaber.Stop();
+        game.zaber.stop();
     }
     if (ImGui::Button("Ephys Initialize")) {
         game.ephys.Initialize();
