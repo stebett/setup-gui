@@ -171,7 +171,7 @@ void Zaber::initialize() {
     sendMessage(fmt::format("/set maxspeed {}", 200000));
     moveX(protocol.start_x);
     moveY(protocol.start_y);
-    sleep(2);
+    Sleep(2000);
     spdlog::info("[Zaber] Setting speed to {}", protocol.speed);
     sendMessage(fmt::format("/set maxspeed {}", protocol.speed));
     movedX = true;

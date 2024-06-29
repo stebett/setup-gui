@@ -46,6 +46,11 @@ set(SOURCES
         includes/timer.h
         includes/timer.h
 )
+add_library(Modules)
+target_sources(Modules
+        PUBLIC
+        FILE_SET CXX_MODULES FILES
+        includes/compress_videos.ixx)
 
 add_executable(${EXEC} main.cpp ${SOURCES})
 target_link_libraries(${EXEC}
@@ -53,8 +58,11 @@ target_link_libraries(${EXEC}
         boost::boost
         imgui::imgui
         raylib
-        spdlog::spdlog)
+        spdlog::spdlog
+        Modules)
 
 if(MINGW)
     target_link_libraries(${EXEC} ws2_32)
 endif()
+
+target_link_libraries(Modules spdlog::spdlog)

@@ -7,6 +7,8 @@
 #include "game.h"
 #include <format>
 
+import compress_videos;
+
 constexpr ImVec4 red{1., 0., 0., 1.};
 constexpr ImVec4 green{0., 1., 0., 1.};
 ImGuiIO *Gui::m_io;
@@ -181,14 +183,28 @@ void manualWindow(Game &game) {
     if (ImGui::Button("Cameras 2 Lateral Stop")) {
         game.camera2Lateral.Stop();
     }
-    if (ImGui::Button("Compress Videos")) {
-    }
+
     if (ImGui::Button("Copy Ephys")) {
     }
     if (ImGui::Button("Copy Metadata")) {
     }
     ImGui::EndDisabled();
+
+    static const char *result = "";
+    if (ImGui::Button("Compress Videos")) {
+        result = compressVideos() ? "Success!" : "Failure!";
+        ImGui::OpenPopup("Result");
+    }
+    const ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+    ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+    if (ImGui::BeginPopupModal("Result", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::Text(result);
+        if (ImGui::Button("OK", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+        ImGui::SetItemDefaultFocus();
+        ImGui::EndPopup();
+    }
 }
+
 
 void imguiWindowMain(ImGuiIO io, Game &game) {
     static bool show_demo_window = false;
