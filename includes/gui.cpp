@@ -140,6 +140,7 @@ void manualWindow(Game &game) {
     if (ImGui::Button("Zaber Initialize")) {
         game.zaber.initialize();
     }
+    if (!game.zaber.isInitialized()) ImGui::BeginDisabled(true);
     if (ImGui::Button("Zaber Start")) {
         game.zaber.start();
     }
@@ -148,12 +149,11 @@ void manualWindow(Game &game) {
     if (ImGui::Button("Zaber Send Message")) {
         game.zaber.sendMessage(message);
     }
-    if (ImGui::Button("Zaber Get X")) {
-        game.zaber.getX();
-    }
     if (ImGui::Button("Zaber Stop")) {
         game.zaber.stop();
     }
+    if (!game.zaber.isInitialized()) ImGui::EndDisabled();
+    ImGui::BeginDisabled(true);
     if (ImGui::Button("Ephys Initialize")) {
         game.ephys.Initialize();
     }
@@ -187,6 +187,7 @@ void manualWindow(Game &game) {
     }
     if (ImGui::Button("Copy Metadata")) {
     }
+    ImGui::EndDisabled();
 }
 
 void imguiWindowMain(ImGuiIO io, Game &game) {
