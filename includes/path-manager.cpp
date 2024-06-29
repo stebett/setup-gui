@@ -2,7 +2,7 @@
 // Created by ginko on 11/06/24.
 //
 
-#include "data_view.h"
+#include "path-manager.h"
 //
 // Created by Stefano on 6/29/2024.
 //
@@ -13,7 +13,7 @@
 
 constexpr auto metadataPath{"metadata.toml"};
 
-DataView::DataView() {
+PathManager::PathManager() {
     toml::table config{};
     try {
         config = toml::parse_file(metadataPath);
@@ -35,8 +35,8 @@ DataView::DataView() {
     loadAndCheck(cam2Path, "cam2Path");
 }
 
-int DataView::CointainedElements(const std::filesystem::path &directory_path) {
-    int file_count {};
+int PathManager::CointainedElements(const std::filesystem::path &directory_path) {
+    int file_count{};
     try {
         file_count = static_cast<int>(std::ranges::distance(std::filesystem::directory_iterator(directory_path)));
     } catch (const std::filesystem::filesystem_error &e) {
@@ -44,4 +44,15 @@ int DataView::CointainedElements(const std::filesystem::path &directory_path) {
         return -1;
     }
     return file_count;
+}
+
+void PathManager::computeSession(const std::string &subject, const std::string &date) {
+    sessionPath = dataRootPath / subject / fmt::format("{}_{}", subject, date);
+    sessionPath = absolute(sessionPath);
+    try {
+        std::filesystem::create_directories(sessionPath);
+        spdlog::info("[PathManager] Created session directory at: {}", sessionPath.string());
+    } catch (const std::filesystem::filesystem_error &e) {
+        spdlog::error("[PathManager] Failed creating session directory at: {}\nwith error: {}", sessionPath.string(), e.what());
+    }
 }

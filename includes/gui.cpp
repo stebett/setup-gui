@@ -34,6 +34,7 @@ void controlWindow(Game &game) {
             ImGui::PushID(subject);
             if (ImGui::Button(Session::enum2String(subject))) {
                 game.session.SwitchSubject(subject);
+                game.pathManager.computeSession(game.session.getSubject(), game.session.getDate());
                 ImGui::CloseCurrentPopup();
             }
             ImGui::PopID();
@@ -130,25 +131,26 @@ void camerasWindow(const Game &game) {
 
 void dataWindow(Game const &game) {
     ImGui::SeparatorText("Data control");
-    static int cam1Files = game.dataView.CointainedElements(game.dataView.cam1Path);
-    static int cam2Files = game.dataView.CointainedElements(game.dataView.cam2Path);
-    static int ephysFiles = game.dataView.CointainedElements(game.dataView.ephysRecordingPath);
+    static int cam1Files = game.pathManager.CointainedElements(game.pathManager.cam1Path);
+    static int cam2Files = game.pathManager.CointainedElements(game.pathManager.cam2Path);
+    static int ephysFiles = game.pathManager.CointainedElements(game.pathManager.ephysRecordingPath);
     static ImVec4 color{};
 
     color = cam1Files > 0 ? green : red;
-    ImGui::Text("Camera 1 Frontal path:\n\t%s", game.dataView.cam1Path.string().c_str());
+    ImGui::Text("Camera 1 Frontal path:\n\t%s", game.pathManager.cam1Path.string().c_str());
     ImGui::TextColored(color, "Number of files contained: %i", cam1Files);
     // ImGui::Text("Expected number of files: %i", static_cast<int>(game.getStartTime()) * 500); //TODO fix this )
 
     color = cam2Files > 0 ? green : red;
-    ImGui::Text("Camera 2 Lateral path:\n\t%s", game.dataView.cam2Path.string().c_str());
+    ImGui::Text("Camera 2 Lateral path:\n\t%s", game.pathManager.cam2Path.string().c_str());
     ImGui::TextColored(color, "Number of files contained: %i", cam2Files);
     // ImGui::Text("Expected number of files: %i", static_cast<int>(game.getStartTime()) * 500); //TODO fix this )
 
     color = ephysFiles > 0 ? green : red;
-    ImGui::Text("Ephys path:\n\t%s", game.dataView.ephysRecordingPath.string().c_str());
+    ImGui::Text("Ephys path:\n\t%s", game.pathManager.ephysRecordingPath.string().c_str());
     ImGui::TextColored(color, "Number of files contained: %i", ephysFiles);
     // ImGui::Text("Expected number of files: %i", static_cast<int>(game.getStartTime()) * 500); //TODO fix this )
+    ImGui::Text("Session path:\n\t%s", game.pathManager.sessionPath.string().c_str());
 }
 
 void manualWindow(Game &game) {

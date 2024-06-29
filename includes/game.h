@@ -8,7 +8,7 @@
 
 #include "control.h"
 #include "zaber.h"
-#include "data_view.h"
+#include "path-manager.h"
 #include "ephys.h"
 #include "camera-control.h"
 
@@ -23,7 +23,7 @@ public:
     Controls controls;
     Session session;
     Zaber zaber;
-    DataView dataView;
+    PathManager pathManager;
     Ephys ephys;
     CameraController camera1Frontal;
     CameraController camera2Lateral;
