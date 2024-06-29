@@ -203,7 +203,7 @@ Zaber::Zaber()
 
 
 Zaber::~Zaber() {
-    stop();
+    if (isInitialized()) stop();
     spdlog::info("[Zaber] Closing serial port)");
     try {
         serial.close(); // Close the serial port
