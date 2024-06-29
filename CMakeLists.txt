@@ -40,18 +40,14 @@ file(GLOB_RECURSE INCLUDE_SOURCES ${INCLUDE}/*.cpp)
 set(SOURCES
         ${rlImGui_SOURCES}
         ${INCLUDE_SOURCES}
-        includes/protocols.cpp
-        includes/protocols.h
-        includes/protocols.h
-        includes/timer.h
-        includes/timer.h
 )
 add_library(Modules)
 target_sources(Modules
         PUBLIC
         FILE_SET CXX_MODULES FILES
         includes/compress_videos.ixx
-        includes/session_control.ixx)
+        includes/session_control.ixx
+        includes/timer.ixx)
 
 add_executable(${EXEC} main.cpp ${SOURCES})
 target_link_libraries(${EXEC}

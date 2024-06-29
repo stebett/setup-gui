@@ -1,10 +1,11 @@
-#ifndef APTOMODO_TIMER_H
-#define APTOMODO_TIMER_H
-
+//
+// Created by Stefano on 6/29/2024.
+//
+module;
 #include <chrono>
+export module timer;
 
-
-class Timer {
+export class Timer {
 public:
     Timer() {
         Reset();
@@ -14,9 +15,9 @@ public:
         m_Start = std::chrono::high_resolution_clock::now();
     }
 
-    [[nodiscard]] float Elapsed() const  {
+    [[nodiscard]] float Elapsed() const {
         return std::chrono::duration_cast<std::chrono::nanoseconds>(
-                std::chrono::high_resolution_clock::now() - m_Start).count() * 0.001f * 0.001f * 0.001f;
+                   std::chrono::high_resolution_clock::now() - m_Start).count() * 0.001f * 0.001f * 0.001f;
     }
 
     [[nodiscard]] float ElapsedMillis() const {
@@ -26,5 +27,3 @@ public:
 private:
     std::chrono::time_point<std::chrono::high_resolution_clock> m_Start;
 };
-
-#endif //APTOMODO_TIMER_H

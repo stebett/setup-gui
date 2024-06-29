@@ -24,7 +24,7 @@ void controlWindow(Game &game) {
     if (ImGui::Button("Initialize Experiment")) { game.controls.Initialize(); }
     ImGui::TableNextRow();
     ImGui::TableSetColumnIndex(0);
-    if (ImGui::Button("Switch Protocol")) { game.controls.SwitchProtocol(); }
+    if (ImGui::Button("Switch Protocol")) { game.zaber.loadProtocol(); }
     ImGui::TableSetColumnIndex(1);
     if (ImGui::Button("Switch Subject")) {
         ImGui::OpenPopup("Choose Subject");

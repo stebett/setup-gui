@@ -20,7 +20,8 @@
 #endif
 
 #include "protocols.h"
-#include "timer.h"
+
+import timer;
 
 class Zaber {
 

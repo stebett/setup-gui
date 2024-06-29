@@ -11,11 +11,3 @@ void Controls::Initialize() {
 void Controls::Start() {
 
 }
-
-void Controls::SwitchProtocol() {
-
-}
-
-void Controls::SwitchSubject() {
-
-}

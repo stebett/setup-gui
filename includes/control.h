@@ -10,8 +10,6 @@ class Controls {
 public:
     void Initialize();
     void Start();
-    void SwitchProtocol();
-    void SwitchSubject();
 };
 
 
