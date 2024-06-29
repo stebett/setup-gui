@@ -8,32 +8,6 @@
 #include <spdlog/spdlog.h>
 #include <fmt/core.h>
 
-// Function to read data from the serial port
-std::string readFromSerialPort(boost::asio::serial_port &serial) {
-    char buffer[100]; // Buffer to store incoming data
-    boost::system::error_code ec;
-    // Read data from the serial port
-    size_t len
-            = read(serial, boost::asio::buffer(buffer), ec);
-    if (ec) {
-        spdlog::error("[Zaber] Error reading from serial port: {}", ec.message());
-        return "";
-    }
-    // Return the read data as a string
-    return {buffer, len};
-}
-
-// Function to write data to the serial port
-void writeToSerialPort(boost::asio::serial_port &serial,
-                       const std::pmr::string &message) {
-    boost::system::error_code ec;
-    // Write data to the serial port
-    spdlog::info("[Zaber] Writing: {}", message);
-    write(serial, boost::asio::buffer(message), ec);
-    if (ec) {
-        spdlog::error("[Zaber] Error writing to serial port: {}", ec.message());
-    }
-}
 
 bool SelectComPorts() //added function to find the present serial
 {
@@ -61,6 +35,23 @@ bool SelectComPorts() //added function to find the present serial
     return gotPort;
 }
 
+std::string read(boost::asio::serial_port &serial) {
+    boost::asio::streambuf buf;
+    std::string response;
+
+    try {
+        boost::asio::read_until(serial, buf, "\r\n");
+
+        std::istream is(&buf);
+        std::getline(is, response);
+    } catch (boost::system::system_error &e) {
+        std::cerr << "Error reading from serial port: " << e.what() << std::endl;
+    }
+
+    return response;
+}
+
+
 // Function to configure the serial port
 bool Zaber::connect(boost::asio::serial_port &serial,
                     const std::string &portname,
@@ -80,6 +71,17 @@ bool Zaber::connect(boost::asio::serial_port &serial,
         spdlog::error("[Zaber] Error configuring serial port: {}", e.what());
     }
     return serial.is_open();
+}
+
+std::string Zaber::getProtocol() {
+    return {};
+}
+
+void Zaber::sendMessage(const std::string &message) {
+    spdlog::info("[Zaber] Sending command: {}", message);
+    boost::asio::write(serial, boost::asio::buffer(message + "\r\n"));
+    answer = read(serial);
+    spdlog::info("[Zaber] [Read] {}", answer);
 }
 
 
@@ -103,21 +105,6 @@ bool Zaber::isRunning() const {
     return running;
 }
 
-std::string read(boost::asio::serial_port &serial) {
-    boost::asio::streambuf buf;
-    std::string response;
-
-    try {
-        boost::asio::read_until(serial, buf, "\r\n");
-
-        std::istream is(&buf);
-        std::getline(is, response);
-    } catch (boost::system::system_error &e) {
-        std::cerr << "Error reading from serial port: " << e.what() << std::endl;
-    }
-
-    return response;
-}
 
 int Zaber::getX() {
     static int last_x{};
@@ -155,17 +142,6 @@ int Zaber::getNextX() const {
     return xNext;
 }
 
-std::string Zaber::getProtocol() {
-    return {};
-}
-
-void Zaber::sendMessage(const std::string &message) {
-    spdlog::info("[Zaber] Sending command: {}", message);
-    boost::asio::write(serial, boost::asio::buffer(message + "\r\n"));
-    answer = read(serial);
-    spdlog::info("[Zaber] [Read] {}", answer);
-}
-
 void Zaber::moveX(int position) {
     sendMessage(fmt::format("/2 1 move abs {}", position));
     movedX = true;
@@ -178,11 +154,6 @@ void Zaber::moveY(int position) {
 
 float Zaber::getSecondsToNext() const {
     return protocol.getInterval() - timer.Elapsed();
-}
-
-Zaber::Zaber(): io(),
-                serial(io) {
-    spdlog::info("[Zaber] [Constructor] Initializing");
 }
 
 void Zaber::initialize() {
@@ -208,18 +179,11 @@ void Zaber::initialize() {
     timer.Reset();
 }
 
-Zaber::~Zaber() {
-    spdlog::info("[Zaber] Closing serial port)");
-    try {
-        serial.close(); // Close the serial port
-    } catch (const std::exception &e) {
-        spdlog::error("[Zaber] Error closing serial port: {}", e.what());
-    }
-}
 
 void Zaber::stop() {
     sendMessage("/1 1 stop");
     sendMessage("/2 1 stop");
+    running = false;
 }
 
 void Zaber::Update() {
@@ -232,15 +196,18 @@ void Zaber::Update() {
 }
 
 
-//
-//
-// // Write the message to the serial port
-// writeToSerialPort(serial, message);
-// cout << "Message sent: " << message << endl;
-//
-// // Read the response from the server
-// string response = readFromSerialPort(serial);
-// if (!response.empty()) {
-//     cout << "Response received: " << response << endl;
-// }
-//
+Zaber::Zaber()
+    : io(), serial(io) {
+    spdlog::info("[Zaber] [Constructor] Initializing");
+}
+
+
+Zaber::~Zaber() {
+    stop();
+    spdlog::info("[Zaber] Closing serial port)");
+    try {
+        serial.close(); // Close the serial port
+    } catch (const std::exception &e) {
+        spdlog::error("[Zaber] Error closing serial port: {}", e.what());
+    }
+}
