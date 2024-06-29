@@ -109,7 +109,7 @@ bool Zaber::isRunning() const {
 int Zaber::getX() {
     static int last_x{};
     if (!initialized) return 0;
-    if (!movedX) return last_x;
+    if (!movedX || timer.Elapsed() < 1) return last_x;
 
     sendMessage("/2 1 get pos");
     const auto answer_pos = answer.find_last_of(' ');
