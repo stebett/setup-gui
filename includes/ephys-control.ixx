@@ -26,6 +26,8 @@ public:
         try {
             boost::asio::connect(command_socket, endpoints);
             spdlog::info("[Ephys] connected to {} : {}", host, port);
+            initialized = true;
+
             // readResponse();
         } catch (const std::exception &e) {
             spdlog::error("[Ephys] error connecting to {} : {} -> {}", host, port, e.what());
@@ -84,37 +86,28 @@ public:
 
     void stop() {
         sendCommand("set runmode stop");
+        running = false;
     }
 
     ~EphysControl() {
+        initialized = false;
         disconnectFromHost();
     }
 
 
     void start() {
+        running = true;
         spdlog::info("[Ephys] Starting");
         sendCommand("set runmode record");
         // readResponse();
     }
 
+    [[nodiscard]] bool isRunning() const  {return running;} // TODO add periodic checks asking main program if it is actually running
+    [[nodiscard]] bool isInitialized() const  {return initialized;}
 private:
     boost::asio::io_context io_context;
     tcp::socket command_socket;
     boost::asio::steady_timer timer;
+    bool initialized = {false};
+    bool running = {false};
 };
-
-int main() {
-    try {
-        EphysControl client;
-        client.connectToHost("127.0.0.1", 5000);
-
-        client.sendCommand("your_command_here");
-        client.readResponse();
-
-        client.disconnectFromHost();
-    } catch (std::exception &e) {
-        std::cerr << "Exception: " << e.what() << std::endl;
-    }
-
-    return 0;
-}

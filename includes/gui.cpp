@@ -30,7 +30,9 @@ void controlWindow(Game &game) {
     if (ImGui::Button("Switch Subject")) {
         ImGui::OpenPopup("Choose Subject");
     }
-    if (ImGui::BeginPopupModal("Choose Subject", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize)) {
+    if (ImGui::BeginPopupModal("Choose Subject", nullptr,
+                               ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+                               ImGuiWindowFlags_AlwaysAutoResize)) {
         for (const auto subject: subjectList) {
             ImGui::PushID(subject);
             if (ImGui::Button(Session::enum2String(subject))) {
@@ -94,16 +96,16 @@ void zaberWindow(Game &game) {
 
 void ephysWindow(const Game &game) {
     ImGui::SeparatorText("Ephys");
-    // if (game.ephys.IsInitialized()) {
-    //     ImGui::TextColored({0., 1., 0., 1.}, "Ephys initialized");
-    // } else {
-    //     ImGui::TextColored({1., 0., 0., 1.}, "Ephys not Initialized");
-    // }
-    // if (game.ephys.IsRunning()) {
-    //     ImGui::TextColored({0., 1., 0., 1.}, "Ephys running");
-    // } else {
-    //     ImGui::TextColored({1., 0., 0., 1.}, "Ephys not Running");
-    // }
+    if (game.ephys.isInitialized()) {
+        ImGui::TextColored({0., 1., 0., 1.}, "Ephys initialized");
+    } else {
+        ImGui::TextColored({1., 0., 0., 1.}, "Ephys not Initialized");
+    }
+    if (game.ephys.isRunning()) {
+        ImGui::TextColored({0., 1., 0., 1.}, "Ephys running");
+    } else {
+        ImGui::TextColored({1., 0., 0., 1.}, "Ephys not Running");
+    }
 }
 
 void camerasWindow(const Game &game) {
@@ -136,6 +138,13 @@ void dataWindow(Game const &game) {
     static int cam2Files = game.pathManager.CointainedElements(game.pathManager.cam2InputPath);
     static int ephysFiles = game.pathManager.CointainedElements(game.pathManager.ephysRecordingPath);
     static ImVec4 color{};
+    static Timer timer{};
+    if (timer.Elapsed() > 10) {
+        cam1Files = game.pathManager.CointainedElements(game.pathManager.cam1InputPath);
+        cam2Files = game.pathManager.CointainedElements(game.pathManager.cam2InputPath);
+        ephysFiles = game.pathManager.CointainedElements(game.pathManager.ephysRecordingPath);
+        timer.Reset();
+    }
 
     color = cam1Files > 0 ? green : red;
     ImGui::Text("Camera 1 Frontal path:\n\t%s", game.pathManager.cam1InputPath.string().c_str());
@@ -182,9 +191,36 @@ void manualWindow(Game &game) {
     if (ImGui::Button("Ephys Stop")) {
         game.ephys.stop();
     }
+    if (!game.pathManager.isInitialized()) ImGui::BeginDisabled(true);
+
     if (ImGui::Button("Copy Ephys")) {
         game.pathManager.saveEphys();
     }
+
+    if (ImGui::Button("Copy Metadata")) {
+    }
+
+    static std::string result = "";
+    if (ImGui::Button("Compress Videos")) {
+        result += compressVideos(game.pathManager.cam1InputPath, game.pathManager.cam1OutputPath)
+                      ? "Cam 1: Success!\n"
+                      : "Cam 1: Failure!\n";
+        result += compressVideos(game.pathManager.cam2InputPath, game.pathManager.cam2OutputPath)
+                      ? "Cam 2: Success!"
+                      : "Cam 2: Failure!";
+
+        ImGui::OpenPopup("Result");
+    }
+    const ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+    ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+    if (ImGui::BeginPopupModal("Result", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::Text(result.c_str());
+        if (ImGui::Button("OK", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+        ImGui::SetItemDefaultFocus();
+        ImGui::EndPopup();
+    }
+
+    if (!game.pathManager.isInitialized()) ImGui::EndDisabled();
 
     ImGui::BeginDisabled(true);
 
@@ -207,24 +243,7 @@ void manualWindow(Game &game) {
         game.camera2Lateral.Stop();
     }
 
-    if (ImGui::Button("Copy Metadata")) {
-    }
     ImGui::EndDisabled();
-
-    static std::string result = "";
-    if (ImGui::Button("Compress Videos")) {
-        result +=  compressVideos(game.pathManager.cam1InputPath, game.pathManager.cam1OutputPath) ? "Cam 1: Success!\n" : "Cam 1: Failure!\n";
-        result += compressVideos(game.pathManager.cam2InputPath, game.pathManager.cam2OutputPath) ? "Cam 2: Success!" : "Cam 2: Failure!";
-        ImGui::OpenPopup("Result");
-    }
-    const ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-    ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-    if (ImGui::BeginPopupModal("Result", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::Text(result.c_str());
-        if (ImGui::Button("OK", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
-        ImGui::SetItemDefaultFocus();
-        ImGui::EndPopup();
-    }
 }
 
 
@@ -243,6 +262,7 @@ void imguiWindowMain(ImGuiIO io, Game &game) {
     generalWindow(game);
     statusWindow(game);
     zaberWindow(game);
+    ephysWindow(game);
     camerasWindow(game);
     ImGui::TableSetColumnIndex(1);
     dataWindow(game);
