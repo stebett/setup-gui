@@ -7,7 +7,11 @@ constexpr int screenWidth = 800;
 constexpr int screenHeight = 800;
 
 int main() {
-    InitWindow(screenWidth, screenHeight, "Setup Controller");
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+    InitWindow(screenWidth, screenHeight, "Setup Control");
+    const auto image = LoadImage("rat_icon2.png");
+    SetWindowIcon(image);
+
     Gui::Instantiate();
     FramerateManager framerateManager;
     Game game{};

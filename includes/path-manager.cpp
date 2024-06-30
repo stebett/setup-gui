@@ -50,7 +50,7 @@ void PathManager::computeSession(const std::string &subject, const std::string &
     sessionPath = dataRootPath / subject / fmt::format("{}_{}", subject, date);
     sessionPath = absolute(sessionPath);
     try {
-        std::filesystem::create_directories(sessionPath);
+        create_directories(sessionPath);
         spdlog::info("[PathManager] Created session directory at: {}", sessionPath.string());
     } catch (const std::filesystem::filesystem_error &e) {
         spdlog::error("[PathManager] Failed creating session directory at: {}\nwith error: {}", sessionPath.string(), e.what());

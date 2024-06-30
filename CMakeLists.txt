@@ -27,7 +27,7 @@ if (NOT raylib_FOUND) # If there's none, fetch and build raylib
 endif ()
 
 
-set(EXEC setup-control)
+set(EXEC Setup-Control)
 set(rlImGui_ROOT "vendors/rlImGui")
 set(INCLUDE "includes/")
 
@@ -49,7 +49,16 @@ target_sources(Modules
         includes/session_control.ixx
         includes/timer.ixx)
 
-add_executable(${EXEC} main.cpp ${SOURCES})
+#if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+#    enable_language("RC")
+#    set (WIN32_RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/windows/MyApp.rc)
+#endif()
+
+add_executable(${EXEC}
+        main.cpp
+        windows/MyApp.rc
+        ${SOURCES}
+)
 target_link_libraries(${EXEC}
         tomlplusplus::tomlplusplus
         boost::boost
@@ -67,3 +76,4 @@ target_link_libraries(Modules
         spdlog::spdlog
         tomlplusplus::tomlplusplus
 )
+
