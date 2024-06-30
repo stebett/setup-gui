@@ -47,7 +47,8 @@ target_sources(Modules
         FILE_SET CXX_MODULES FILES
         includes/compress_videos.ixx
         includes/session_control.ixx
-        includes/timer.ixx)
+        includes/timer.ixx
+        includes/ephys-control.ixx)
 
 #if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 #    enable_language("RC")
@@ -74,6 +75,6 @@ endif ()
 
 target_link_libraries(Modules
         spdlog::spdlog
-        tomlplusplus::tomlplusplus
+        boost::boost
 )
 

@@ -13,6 +13,7 @@
 #include "camera-control.h"
 
 import session_control;
+import ephys_control;
 
 class Game {
     bool initialized{false};
@@ -24,7 +25,7 @@ public:
     Session session;
     Zaber zaber;
     PathManager pathManager;
-    Ephys ephys;
+    EphysControl ephys;
     CameraController camera1Frontal;
     CameraController camera2Lateral;
 public:

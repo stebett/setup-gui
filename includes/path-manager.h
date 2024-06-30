@@ -16,10 +16,13 @@ public:
     std::filesystem::path ephysRecordingPath;
     std::filesystem::path dataRootPath;
     std::filesystem::path sessionPath;
+    bool initialized {false};
 
     PathManager();
     static int CointainedElements(const std::filesystem::path &directory_path);
     void computeSession(const std::string& subject, const std::string& date);
+    void saveEphys();
+    [[nodiscard]] bool isInitialized() const;
 };
 
 

@@ -1,4 +1,4 @@
 dataRootPath = "C:/Users/Stefano/Desktop/data-root/"
-ephysRecordingPath = "/home/ginko/test/ephys/"
-cam1Path = "C:/Users/Stefano/Desktop/cam-1-frontal/"
-cam2Path = "C:/Users/Stefano/Desktop/cam-2-lateral/"
+ephysRecordingPath = "C:/Users/Stefano/Desktop/recordings/ephys/"
+cam1Path = "C:/Users/Stefano/Desktop/recordings/cam-1-frontal/"
+cam2Path = "C:/Users/Stefano/Desktop/recordings/cam-2-lateral/"

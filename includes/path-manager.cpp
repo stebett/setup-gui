@@ -49,8 +49,25 @@ void PathManager::computeSession(const std::string &subject, const std::string &
         create_directories(sessionPath);
         spdlog::info("[PathManager] Created session directory at: {}", sessionPath.string());
     } catch (const std::filesystem::filesystem_error &e) {
-        spdlog::error("[PathManager] Failed creating session directory at: {}\nwith error: {}", sessionPath.string(), e.what());
+        spdlog::error("[PathManager] Failed creating session directory at: {}\nwith error: {}", sessionPath.string(),
+                      e.what());
     }
     cam1OutputPath = sessionPath / fmt::format("cam-1-frontal_{}_{}.mp4", subject, date);
     cam2OutputPath = sessionPath / fmt::format("cam-2-lateral_{}_{}.mp4", subject, date);
+    initialized = true;
+}
+
+void PathManager::saveEphys() {
+    if (!isInitialized()) {
+        spdlog::error("[PathManager] Not moving ephys while not initialized");
+        return;
+    }
+    const auto ephysOutputPath = sessionPath / "ephys";
+    spdlog::info("[PathManager] Moving ephys from {} to {}", ephysRecordingPath.string(), ephysOutputPath.string());
+    std::filesystem::rename(ephysRecordingPath, ephysOutputPath);
+    std::filesystem::create_directory(ephysRecordingPath);
+}
+
+bool PathManager::isInitialized() const {
+    return initialized;
 }

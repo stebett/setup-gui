@@ -8,6 +8,7 @@
 
 
 import compress_videos;
+import ephys_control;
 import session_control;
 
 constexpr ImVec4 red{1., 0., 0., 1.};
@@ -93,16 +94,16 @@ void zaberWindow(Game &game) {
 
 void ephysWindow(const Game &game) {
     ImGui::SeparatorText("Ephys");
-    if (game.ephys.IsInitialized()) {
-        ImGui::TextColored({0., 1., 0., 1.}, "Ephys initialized");
-    } else {
-        ImGui::TextColored({1., 0., 0., 1.}, "Ephys not Initialized");
-    }
-    if (game.ephys.IsRunning()) {
-        ImGui::TextColored({0., 1., 0., 1.}, "Ephys running");
-    } else {
-        ImGui::TextColored({1., 0., 0., 1.}, "Ephys not Running");
-    }
+    // if (game.ephys.IsInitialized()) {
+    //     ImGui::TextColored({0., 1., 0., 1.}, "Ephys initialized");
+    // } else {
+    //     ImGui::TextColored({1., 0., 0., 1.}, "Ephys not Initialized");
+    // }
+    // if (game.ephys.IsRunning()) {
+    //     ImGui::TextColored({0., 1., 0., 1.}, "Ephys running");
+    // } else {
+    //     ImGui::TextColored({1., 0., 0., 1.}, "Ephys not Running");
+    // }
 }
 
 void camerasWindow(const Game &game) {
@@ -172,16 +173,21 @@ void manualWindow(Game &game) {
         game.zaber.stop();
     }
     if (!game.zaber.isInitialized()) ImGui::EndDisabled();
-    ImGui::BeginDisabled(true);
     if (ImGui::Button("Ephys Initialize")) {
-        game.ephys.Initialize();
+        game.ephys.initialize();
     }
     if (ImGui::Button("Ephys Start")) {
-        game.ephys.Start();
+        game.ephys.start();
     }
     if (ImGui::Button("Ephys Stop")) {
-        game.ephys.Stop();
+        game.ephys.stop();
     }
+    if (ImGui::Button("Copy Ephys")) {
+        game.pathManager.saveEphys();
+    }
+
+    ImGui::BeginDisabled(true);
+
     if (ImGui::Button("Cameras 1 Frontal Initialize")) {
         game.camera1Frontal.Initialize();
     }
@@ -201,8 +207,6 @@ void manualWindow(Game &game) {
         game.camera2Lateral.Stop();
     }
 
-    if (ImGui::Button("Copy Ephys")) {
-    }
     if (ImGui::Button("Copy Metadata")) {
     }
     ImGui::EndDisabled();
