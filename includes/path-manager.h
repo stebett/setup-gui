@@ -9,8 +9,10 @@
 
 class PathManager {
 public:
-    std::filesystem::path cam1Path;
-    std::filesystem::path cam2Path;
+    std::filesystem::path cam1InputPath;
+    std::filesystem::path cam2InputPath;
+    std::filesystem::path cam1OutputPath;
+    std::filesystem::path cam2OutputPath;
     std::filesystem::path ephysRecordingPath;
     std::filesystem::path dataRootPath;
     std::filesystem::path sessionPath;

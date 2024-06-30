@@ -1,17 +1,13 @@
 //
-// Created by ginko on 11/06/24.
-//
-
-#include "path-manager.h"
-//
 // Created by Stefano on 6/29/2024.
 //
+#include "path-manager.h"
 
 #include "toml++/toml.hpp"
 #include <spdlog/spdlog.h>
 
 
-constexpr auto metadataPath{"metadata.toml"};
+constexpr auto metadataPath{"../metadata.toml"};
 
 PathManager::PathManager() {
     toml::table config{};
@@ -31,8 +27,8 @@ PathManager::PathManager() {
 
     loadAndCheck(dataRootPath, "dataRootPath");
     loadAndCheck(ephysRecordingPath, "ephysRecordingPath");
-    loadAndCheck(cam1Path, "cam1Path");
-    loadAndCheck(cam2Path, "cam2Path");
+    loadAndCheck(cam1InputPath, "cam1Path");
+    loadAndCheck(cam2InputPath, "cam2Path");
 }
 
 int PathManager::CointainedElements(const std::filesystem::path &directory_path) {
@@ -55,4 +51,6 @@ void PathManager::computeSession(const std::string &subject, const std::string &
     } catch (const std::filesystem::filesystem_error &e) {
         spdlog::error("[PathManager] Failed creating session directory at: {}\nwith error: {}", sessionPath.string(), e.what());
     }
+    cam1OutputPath = sessionPath / fmt::format("cam-1-frontal_{}_{}.mp4", subject, date);
+    cam2OutputPath = sessionPath / fmt::format("cam-2-lateral_{}_{}.mp4", subject, date);
 }

@@ -131,18 +131,18 @@ void camerasWindow(const Game &game) {
 
 void dataWindow(Game const &game) {
     ImGui::SeparatorText("Data control");
-    static int cam1Files = game.pathManager.CointainedElements(game.pathManager.cam1Path);
-    static int cam2Files = game.pathManager.CointainedElements(game.pathManager.cam2Path);
+    static int cam1Files = game.pathManager.CointainedElements(game.pathManager.cam1InputPath);
+    static int cam2Files = game.pathManager.CointainedElements(game.pathManager.cam2InputPath);
     static int ephysFiles = game.pathManager.CointainedElements(game.pathManager.ephysRecordingPath);
     static ImVec4 color{};
 
     color = cam1Files > 0 ? green : red;
-    ImGui::Text("Camera 1 Frontal path:\n\t%s", game.pathManager.cam1Path.string().c_str());
+    ImGui::Text("Camera 1 Frontal path:\n\t%s", game.pathManager.cam1InputPath.string().c_str());
     ImGui::TextColored(color, "Number of files contained: %i", cam1Files);
     // ImGui::Text("Expected number of files: %i", static_cast<int>(game.getStartTime()) * 500); //TODO fix this )
 
     color = cam2Files > 0 ? green : red;
-    ImGui::Text("Camera 2 Lateral path:\n\t%s", game.pathManager.cam2Path.string().c_str());
+    ImGui::Text("Camera 2 Lateral path:\n\t%s", game.pathManager.cam2InputPath.string().c_str());
     ImGui::TextColored(color, "Number of files contained: %i", cam2Files);
     // ImGui::Text("Expected number of files: %i", static_cast<int>(game.getStartTime()) * 500); //TODO fix this )
 
@@ -207,15 +207,16 @@ void manualWindow(Game &game) {
     }
     ImGui::EndDisabled();
 
-    static const char *result = "";
+    static std::string result = "";
     if (ImGui::Button("Compress Videos")) {
-        result = compressVideos() ? "Success!" : "Failure!";
+        result +=  compressVideos(game.pathManager.cam1InputPath, game.pathManager.cam1OutputPath) ? "Cam 1: Success!\n" : "Cam 1: Failure!\n";
+        result += compressVideos(game.pathManager.cam2InputPath, game.pathManager.cam2OutputPath) ? "Cam 2: Success!" : "Cam 2: Failure!";
         ImGui::OpenPopup("Result");
     }
     const ImVec2 center = ImGui::GetMainViewport()->GetCenter();
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
     if (ImGui::BeginPopupModal("Result", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::Text(result);
+        ImGui::Text(result.c_str());
         if (ImGui::Button("OK", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
         ImGui::SetItemDefaultFocus();
         ImGui::EndPopup();
