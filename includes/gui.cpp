@@ -50,7 +50,7 @@ void controlWindow(Game &game) {
 void generalWindow(Game const &game) {
     ImGui::SeparatorText("General");
     static const auto date = Session::getDatePretty();
-    ImGui::Text("Subject: %s", game.session.getSubject());
+    ImGui::TextColored(game.pathManager.isInitialized() ? green : red, "Subject: %s", game.session.getSubject());
     ImGui::Text("Date: %s", date.c_str());
 }
 
@@ -185,12 +185,16 @@ void manualWindow(Game &game) {
     if (ImGui::Button("Ephys Initialize")) {
         game.ephys.initialize();
     }
+
+    if (!game.ephys.isInitialized()) ImGui::BeginDisabled(true);
     if (ImGui::Button("Ephys Start")) {
         game.ephys.start();
     }
     if (ImGui::Button("Ephys Stop")) {
         game.ephys.stop();
     }
+    if (!game.ephys.isInitialized()) ImGui::EndDisabled();
+
     if (!game.pathManager.isInitialized()) ImGui::BeginDisabled(true);
 
     if (ImGui::Button("Copy Ephys")) {

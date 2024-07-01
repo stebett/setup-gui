@@ -22,7 +22,7 @@ public:
 
     void connectToHost(const std::string &host, unsigned short port) {
         tcp::resolver resolver(io_context);
-        auto endpoints = resolver.resolve(host, std::to_string(port));
+        const auto endpoints = resolver.resolve(host, std::to_string(port));
         try {
             boost::asio::connect(command_socket, endpoints);
             spdlog::info("[Ephys] connected to {} : {}", host, port);
@@ -46,6 +46,12 @@ public:
 
     void sendCommand(const std::string &command) {
         boost::asio::write(command_socket, boost::asio::buffer(command + "\n"));
+        //
+        // try {
+        //     boost::asio::write(command_socket, boost::asio::buffer(command + "\n"));
+        // } catch (const std::exception &e) {
+        //     spdlog::error("[Ephys] [sendCommand] Error sending command {}->\n{}", command, e.what());
+        // }
     }
 
     void readResponse() // TODO fix
@@ -102,8 +108,10 @@ public:
         // readResponse();
     }
 
-    [[nodiscard]] bool isRunning() const  {return running;} // TODO add periodic checks asking main program if it is actually running
-    [[nodiscard]] bool isInitialized() const  {return initialized;}
+    [[nodiscard]] bool isRunning() const { return running; }
+    // TODO add periodic checks asking main program if it is actually running
+    [[nodiscard]] bool isInitialized() const { return initialized; }
+
 private:
     boost::asio::io_context io_context;
     tcp::socket command_socket;

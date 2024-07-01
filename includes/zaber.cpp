@@ -153,7 +153,7 @@ void Zaber::moveY(int position) {
 }
 
 float Zaber::getSecondsToNext() const {
-    return protocol.getInterval() - timer.Elapsed();
+    return isRunning() ? protocol.getInterval() - timer.Elapsed() : 0.0f;
 }
 
 void Zaber::initialize() {
@@ -162,7 +162,11 @@ void Zaber::initialize() {
 
     if (connect(serial, "COM3", 115200)) {
         spdlog::info("[Zaber] Initialization successfull");
-        initialized = true; // TODO error handling
+        initialized = true;
+    }
+    else {
+        spdlog::error("[Zaber] Initialization failed");
+        return;
     }
     spdlog::info("[Zaber] Loading protocol");
     loadProtocol();

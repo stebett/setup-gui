@@ -63,9 +63,14 @@ void PathManager::saveEphys() {
         return;
     }
     const auto ephysOutputPath = sessionPath / "ephys";
-    spdlog::info("[PathManager] Moving ephys from {} to {}", ephysRecordingPath.string(), ephysOutputPath.string());
-    std::filesystem::rename(ephysRecordingPath, ephysOutputPath);
-    std::filesystem::create_directory(ephysRecordingPath);
+    spdlog::info("[PathManager] [saveEphys] Moving from {} to {}", ephysRecordingPath.string(), ephysOutputPath.string());
+    try {
+        std::filesystem::rename(ephysRecordingPath, ephysOutputPath);
+        std::filesystem::create_directory(ephysRecordingPath);
+    }
+     catch (const std::filesystem::filesystem_error &e) {
+        spdlog::error("[PathManager] [saveEphys]\n{}", e.what());
+    }
 }
 
 bool PathManager::isInitialized() const {
