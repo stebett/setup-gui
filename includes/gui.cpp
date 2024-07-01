@@ -219,7 +219,10 @@ void manualWindow(Game &game) {
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
     if (ImGui::BeginPopupModal("Result", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         ImGui::Text(result.c_str());
-        if (ImGui::Button("OK", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+        if (ImGui::Button("OK", ImVec2(120, 0))) {
+            result = "";
+            ImGui::CloseCurrentPopup();
+        }
         ImGui::SetItemDefaultFocus();
         ImGui::EndPopup();
     }
