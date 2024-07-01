@@ -3,13 +3,10 @@
 //
 
 #include "gui.h"
+#include <string>
 #include <imgui_impl_raylib.h>
-#include "game.h"
 
-
-import compress_videos;
-import ephys_control;
-import session_control;
+import timer;
 
 constexpr ImVec4 red{1., 0., 0., 1.};
 constexpr ImVec4 green{0., 1., 0., 1.};
@@ -17,34 +14,63 @@ ImGuiIO *Gui::m_io;
 
 void controlWindow(Game &game) {
     ImGui::SeparatorText("Control Panel");
-    ImGui::BeginTable("table1", 2);
-    ImGui::TableNextRow();
-    ImGui::TableSetColumnIndex(0);
-    if (ImGui::Button("Start Experiment")) { game.controls.Start(); }
-    ImGui::TableSetColumnIndex(1);
-    if (ImGui::Button("Initialize Experiment")) { game.controls.Initialize(); }
-    ImGui::TableNextRow();
-    ImGui::TableSetColumnIndex(0);
-    if (ImGui::Button("Switch Protocol")) { game.zaber.loadProtocol(); }
-    ImGui::TableSetColumnIndex(1);
-    if (ImGui::Button("Switch Subject")) {
-        ImGui::OpenPopup("Choose Subject");
-    }
-    if (ImGui::BeginPopupModal("Choose Subject", nullptr,
-                               ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
-                               ImGuiWindowFlags_AlwaysAutoResize)) {
-        for (const auto subject: subjectList) {
-            ImGui::PushID(subject);
-            if (ImGui::Button(Session::enum2String(subject))) {
-                game.session.SwitchSubject(subject);
-                game.pathManager.computeSession(game.session.getSubject(), game.session.getDate());
-                ImGui::CloseCurrentPopup();
-            }
-            ImGui::PopID();
+    if (!game.isInitialized()) {
+        if (ImGui::Button("Initialize Experiment")) {
+            ImGui::OpenPopup("Choose Subject");
         }
-        ImGui::EndPopup();
+        if (ImGui::BeginPopupModal("Choose Subject", nullptr,
+                                   ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+                                   ImGuiWindowFlags_AlwaysAutoResize)) {
+            for (const auto subject: subjectList) {
+                ImGui::PushID(subject);
+                if (ImGui::Button(Session::enum2String(subject))) {
+                    game.initialize(subject);
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::PopID();
+            }
+            ImGui::EndPopup();
+        }
+        return;
     }
-    ImGui::EndTable();
+    if (!game.isRunning()) {
+        if (ImGui::Button("Start Experiment")) {
+            game.start();
+        }
+        return;
+    }
+    if (ImGui::Button("Stop Experiment")) { game.stop(); }
+
+
+    //
+    // ImGui::BeginTable("table1", 2);
+    // ImGui::TableNextRow();
+    // ImGui::TableSetColumnIndex(0);
+    // if (ImGui::Button("Start Experiment")) { game.controls.Start(); }
+    // ImGui::TableSetColumnIndex(1);
+    // if (ImGui::Button("Initialize Experiment")) { game.controls.Initialize(); }
+    // ImGui::TableNextRow();
+    // ImGui::TableSetColumnIndex(0);
+    // if (ImGui::Button("Switch Protocol")) { game.zaber.loadProtocol(); }
+    // ImGui::TableSetColumnIndex(1);
+    // if (ImGui::Button("Switch Subject")) {
+    //     ImGui::OpenPopup("Choose Subject");
+    // }
+    // if (ImGui::BeginPopupModal("Choose Subject", nullptr,
+    //                            ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+    //                            ImGuiWindowFlags_AlwaysAutoResize)) {
+    //     for (const auto subject: subjectList) {
+    //         ImGui::PushID(subject);
+    //         if (ImGui::Button(Session::enum2String(subject))) {
+    //             game.session.SwitchSubject(subject);
+    //             game.pathManager.computeSession(game.session.getSubject(), game.session.getDate());
+    //             ImGui::CloseCurrentPopup();
+    //         }
+    //         ImGui::PopID();
+    //     }
+    //     ImGui::EndPopup();
+    // }
+    // ImGui::EndTable();
 }
 
 void generalWindow(Game const &game) {
@@ -54,19 +80,19 @@ void generalWindow(Game const &game) {
     ImGui::Text("Date: %s", date.c_str());
 }
 
-void statusWindow(Game &game) {
+void statusWindow(const Game &game) {
     ImGui::SeparatorText("Status");
-    if (game.IsInitialized()) {
+    if (game.isInitialized()) {
         ImGui::TextColored({0., 1., 0., 1.}, "Experiment initialized");
     } else {
         ImGui::TextColored({1., 0., 0., 1.}, "Experiment not initialized");
     }
-    if (game.IsRunning()) {
+    if (game.isRunning()) {
         ImGui::TextColored({0., 1., 0., 1.}, "Experiment running");
     } else {
         ImGui::TextColored({1., 0., 0., 1.}, "Experiment not running");
     }
-    if (game.IsRunning()) {
+    if (game.isRunning()) {
         ImGui::Text("Time from start: %f", game.getStartTime());
     } else {
         ImGui::Text("Time from start: 0");

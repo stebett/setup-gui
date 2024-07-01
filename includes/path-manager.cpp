@@ -42,7 +42,7 @@ int PathManager::CointainedElements(const std::filesystem::path &directory_path)
     return file_count;
 }
 
-void PathManager::computeSession(const std::string &subject, const std::string &date) {
+void PathManager::initialize(const std::string &subject, const std::string &date) {
     sessionPath = dataRootPath / subject / fmt::format("{}_{}", subject, date);
     sessionPath = absolute(sessionPath);
     try {

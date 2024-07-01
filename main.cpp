@@ -1,7 +1,8 @@
-#include <iostream>
 #include "includes/gui.h"
 #include <raylib.h>
 #include "framerateManager.h"
+import game;
+
 
 constexpr int screenWidth = 800;
 constexpr int screenHeight = 800;

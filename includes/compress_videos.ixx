@@ -23,6 +23,10 @@ export bool compressVideos(const std::filesystem::path &input_path, const std::f
                                      output_file.string());
 
     const auto success = system(command.c_str());
-    spdlog::info("[Video Compression] compression return code: {}", success);
+    if (success == 0) {
+        spdlog::info("[Video Compression] compression return code: {}", success);
+    } else {
+        spdlog::error("[Video Compression] compression return code: {}", success);
+    }
     return success == 0;
 }

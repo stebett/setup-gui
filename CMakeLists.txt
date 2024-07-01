@@ -48,7 +48,8 @@ target_sources(Modules
         includes/compress_videos.ixx
         includes/session_control.ixx
         includes/timer.ixx
-        includes/ephys-control.ixx)
+        includes/ephys-control.ixx
+        includes/game.ixx)
 
 #if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 #    enable_language("RC")

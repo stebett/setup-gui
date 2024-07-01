@@ -38,10 +38,12 @@ export class Session {
     std::string date;
 
 public:
-    void SwitchSubject(const Subject new_subject) {
+    void initialize(const Subject new_subject) {
         spdlog::info("[Session] Switching to subject {}", enum2String(new_subject));
         subject = new_subject;
     }
+
+    [[nodiscard]] bool isInitialized() const { return subject != SubjectNotFound; }
 
 
     [[nodiscard]] char const *  getSubject() const {

@@ -44,7 +44,7 @@ std::string read(boost::asio::serial_port &serial) {
 
         std::istream is(&buf);
         std::getline(is, response);
-    } catch (boost::system::system_error &e) {
+    } catch (const std::exception  &e) {
         std::cerr << "Error reading from serial port: " << e.what() << std::endl;
     }
 
