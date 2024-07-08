@@ -248,7 +248,20 @@ void manualWindow(Game &game) {
     ImGui::EndDisabled();
 
     if (ImGui::Button("Clean Recording Directories")) {
-        game.pathManager.cleanRecordingDirs();
+        ImGui::OpenPopup("Clean Recording Directories");
+    }
+    ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+    if (ImGui::BeginPopupModal("Clean Recording Directories", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::Text("Are you sure you want to delete all the raw recordings?");
+        if (ImGui::Button("Yes, I've already saved everything")) {
+            game.pathManager.cleanRecordingDirs();
+            // This should show you the directory tree of the session
+            ImGui::CloseCurrentPopup();
+        }
+        if (ImGui::Button("Not yet")) {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
     }
 }
 
