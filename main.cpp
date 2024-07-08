@@ -1,15 +1,12 @@
 #include "includes/gui.h"
 #include <raylib.h>
 #include "framerateManager.h"
+
 import game;
-
-
-constexpr int screenWidth = 800;
-constexpr int screenHeight = 800;
 
 int main() {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    InitWindow(screenWidth, screenHeight, "Setup Control");
+    InitWindow(800, 800, "Setup Control");
     const auto image = LoadImage("rat_icon2.png");
     SetWindowIcon(image);
 
@@ -19,7 +16,7 @@ int main() {
 
 
     while (!WindowShouldClose()) {
-        game.zaber.Update();
+        game.update();
         Gui::Update(game);
         BeginDrawing();
         ClearBackground(DARKGRAY);

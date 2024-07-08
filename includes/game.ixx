@@ -60,4 +60,8 @@ public:
         compressVideos(pathManager.cam2InputPath, pathManager.cam2OutputPath);
 // TODO save metadata
     }
+
+    void update() {
+        zaber.update();
+    }
 };

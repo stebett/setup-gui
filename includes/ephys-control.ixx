@@ -42,7 +42,6 @@ public:
         } catch (const std::exception &e) {
             spdlog::error("[Ephys] Error disconnecting -> {}", e.what());
         }
-        spdlog::info("[Ephys] Disconnected");
     }
 
     bool sendCommand(const std::string &command) {

@@ -40,37 +40,6 @@ void controlWindow(Game &game) {
         return;
     }
     if (ImGui::Button("Stop Experiment")) { game.stop(); }
-
-
-    //
-    // ImGui::BeginTable("table1", 2);
-    // ImGui::TableNextRow();
-    // ImGui::TableSetColumnIndex(0);
-    // if (ImGui::Button("Start Experiment")) { game.controls.Start(); }
-    // ImGui::TableSetColumnIndex(1);
-    // if (ImGui::Button("Initialize Experiment")) { game.controls.Initialize(); }
-    // ImGui::TableNextRow();
-    // ImGui::TableSetColumnIndex(0);
-    // if (ImGui::Button("Switch Protocol")) { game.zaber.loadProtocol(); }
-    // ImGui::TableSetColumnIndex(1);
-    // if (ImGui::Button("Switch Subject")) {
-    //     ImGui::OpenPopup("Choose Subject");
-    // }
-    // if (ImGui::BeginPopupModal("Choose Subject", nullptr,
-    //                            ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
-    //                            ImGuiWindowFlags_AlwaysAutoResize)) {
-    //     for (const auto subject: subjectList) {
-    //         ImGui::PushID(subject);
-    //         if (ImGui::Button(Session::enum2String(subject))) {
-    //             game.session.SwitchSubject(subject);
-    //             game.pathManager.computeSession(game.session.getSubject(), game.session.getDate());
-    //             ImGui::CloseCurrentPopup();
-    //         }
-    //         ImGui::PopID();
-    //     }
-    //     ImGui::EndPopup();
-    // }
-    // ImGui::EndTable();
 }
 
 void generalWindow(Game const &game) {

@@ -190,7 +190,7 @@ void Zaber::stop() {
     running = false;
 }
 
-void Zaber::Update() {
+void Zaber::update() {
     if (!running) return;
     if (timer.Elapsed() <= protocol.getInterval()) return;
 

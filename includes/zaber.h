@@ -81,7 +81,7 @@ public:
 
 
     void stop();
-    void Update();
+    void update();
 };
 
 
