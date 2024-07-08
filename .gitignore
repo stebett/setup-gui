@@ -2,3 +2,4 @@
 external-code/
 cmake-build-debug/
 vendors/
+/bins/

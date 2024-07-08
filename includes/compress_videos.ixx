@@ -8,8 +8,8 @@ module;
 
 export module compress_videos;
 
-constexpr auto ffmpeg_path = "C:/Users/Stefano/Downloads/ffmpeg-master-latest-win64-gpl/bin/ffmpeg";
-constexpr int framerate = 6;
+constexpr auto ffmpeg_path = "../bins/ffmpeg-master-latest-win64-gpl/bin/ffmpeg";
+constexpr int framerate = 500;
 
 export bool compressVideos(const std::filesystem::path &input_path, const std::filesystem::path &output_file) {
     if (std::filesystem::exists(output_file)) {
@@ -17,7 +17,7 @@ export bool compressVideos(const std::filesystem::path &input_path, const std::f
         return false;
     }
     const auto command = fmt::format("{} -n -framerate {} -i {}image_%09d.bmp -c:v libx264 -preset ultrafast {}",
-                                     ffmpeg_path,
+                                     std::filesystem::absolute(ffmpeg_path).string(),
                                      framerate,
                                      input_path.string(),
                                      output_file.string());

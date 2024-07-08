@@ -63,13 +63,36 @@ void PathManager::saveEphys() {
         return;
     }
     const auto ephysOutputPath = sessionPath / "ephys";
-    spdlog::info("[PathManager] [saveEphys] Moving from {} to {}", ephysRecordingPath.string(), ephysOutputPath.string());
-    try {
-        std::filesystem::rename(ephysRecordingPath, ephysOutputPath);
-        std::filesystem::create_directory(ephysRecordingPath);
+    spdlog::info("[PathManager] [saveEphys] Moving from {} to {}", ephysRecordingPath.string(),
+                 ephysOutputPath.string());
+    if (std::filesystem::is_directory(ephysOutputPath)) {
+        spdlog::error("[PathManager] [saveEphys] Directory already existing");
+        return;
     }
-     catch (const std::filesystem::filesystem_error &e) {
+    try {
+        std::filesystem::copy(absolute(ephysRecordingPath), absolute(ephysOutputPath),
+                              std::filesystem::copy_options::recursive);
+        // std::filesystem::copy(absolute(ephysRecordingPath), absolute(ephysOutputPath));
+        // std::filesystem::create_directory(ephysRecordingPath);
+    } catch (const std::filesystem::filesystem_error &e) {
         spdlog::error("[PathManager] [saveEphys]\n{}", e.what());
+    }
+}
+
+void PathManager::cleanRecordingDirs() const {
+    try {
+        spdlog::info("[PathManager] Removing directory: {}", ephysRecordingPath.string());
+        std::filesystem::remove_all(absolute(ephysRecordingPath));
+        spdlog::info("[PathManager] Removing directory: {}", cam1InputPath.string());
+        std::filesystem::remove_all(absolute(cam1InputPath));
+        spdlog::info("[PathManager] Removing directory: {}", cam2InputPath.string());
+        std::filesystem::remove_all(absolute(cam2InputPath));
+        spdlog::info("[PathManager] Recreating recording directories");
+        std::filesystem::create_directories(absolute(ephysRecordingPath));
+        std::filesystem::create_directories(absolute(cam1InputPath));
+        std::filesystem::create_directories(absolute(cam2InputPath));
+    } catch (const std::filesystem::filesystem_error &e) {
+        spdlog::error("[PathManager] [cleanRecordingDirs]\n{}", e.what());
     }
 }
 

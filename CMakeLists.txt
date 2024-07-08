@@ -59,6 +59,7 @@ target_sources(Modules
 add_executable(${EXEC}
         main.cpp
         windows/MyApp.rc
+        ${rlImGui_SOURCES}
         ${SOURCES}
 )
 target_link_libraries(${EXEC}

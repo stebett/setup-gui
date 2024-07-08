@@ -22,6 +22,7 @@ public:
     static int CointainedElements(const std::filesystem::path &directory_path);
     void initialize(const std::string& subject, const std::string& date);
     void saveEphys();
+    void cleanRecordingDirs() const;
     [[nodiscard]] bool isInitialized() const;
 };
 

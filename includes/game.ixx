@@ -39,8 +39,8 @@ public:
     void initialize(const Subject subject) {
         initialized = true;
         session.initialize(subject);
-        zaber.initialize();
-        ephys.initialize();
+        if (!zaber.isInitialized()) zaber.initialize();
+        if (!ephys.isInitialized()) ephys.initialize();
         pathManager.initialize(session.getSubject(), session.getDate());
     }
 

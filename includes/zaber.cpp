@@ -160,7 +160,7 @@ void Zaber::initialize() {
     spdlog::info("[Zaber] Initializing");
     SelectComPorts();
 
-    if (connect(serial, "COM3", 115200)) {
+    if (connect(serial, "COM4", 115200)) {
         spdlog::info("[Zaber] Initialization successfull");
         initialized = true;
     }

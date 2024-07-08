@@ -246,6 +246,10 @@ void manualWindow(Game &game) {
     }
 
     ImGui::EndDisabled();
+
+    if (ImGui::Button("Clean Recording Directories")) {
+        game.pathManager.cleanRecordingDirs();
+    }
 }
 
 
