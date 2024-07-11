@@ -9,9 +9,8 @@ module;
 export module compress_videos;
 
 constexpr auto ffmpeg_path = "../bins/ffmpeg-master-latest-win64-gpl/bin/ffmpeg";
-constexpr int framerate = 500;
 
-export bool compressVideos(const std::filesystem::path &input_path, const std::filesystem::path &output_file) {
+export bool compressVideos(const std::filesystem::path &input_path, const std::filesystem::path &output_file, int framerate = 500) {
     if (std::filesystem::exists(output_file)) {
         spdlog::error("[Video Compression] video already existing at: {}", output_file.string());
         return false;

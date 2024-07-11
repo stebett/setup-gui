@@ -19,6 +19,7 @@ export enum Subject {
     SB020,
     SB021,
     SB022,
+    calibration,
     SubjectNotFound,
 };
 
@@ -29,6 +30,7 @@ export constexpr std::array subjectList{
     SB020,
     SB021,
     SB022,
+    calibration,
 };
 
 
@@ -69,6 +71,7 @@ public:
             case SB020: return "SB020";
             case SB021: return "SB021";
             case SB022: return "SB022";
+            case calibration: return "calibration";
             default: return "Error";
         }
     }

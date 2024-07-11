@@ -201,10 +201,11 @@ void manualWindow(Game &game) {
 
     static std::string result = "";
     if (ImGui::Button("Compress Videos")) {
-        result += compressVideos(game.pathManager.cam1InputPath, game.pathManager.cam1OutputPath)
+        const int fps = game.session.getSubject() == "calibration" ? 10 : 500;
+        result += compressVideos(game.pathManager.cam1InputPath, game.pathManager.cam1OutputPath, fps)
                       ? "Cam 1: Success!\n"
                       : "Cam 1: Failure!\n";
-        result += compressVideos(game.pathManager.cam2InputPath, game.pathManager.cam2OutputPath)
+        result += compressVideos(game.pathManager.cam2InputPath, game.pathManager.cam2OutputPath, fps)
                       ? "Cam 2: Success!"
                       : "Cam 2: Failure!";
 

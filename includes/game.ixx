@@ -56,8 +56,10 @@ public:
         zaber.stop();
         ephys.stop();
         pathManager.saveEphys();
-        compressVideos(pathManager.cam1InputPath, pathManager.cam1OutputPath);
-        compressVideos(pathManager.cam2InputPath, pathManager.cam2OutputPath);
+        const int fps = session.getSubject() == "calibration" ? 10 : 500;
+
+        compressVideos(pathManager.cam1InputPath, pathManager.cam1OutputPath, fps);
+        compressVideos(pathManager.cam2InputPath, pathManager.cam2OutputPath, fps);
 // TODO save metadata
     }
 
