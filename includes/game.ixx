@@ -14,11 +14,12 @@ export module game;
 export import session_control;
 export import ephys_control;
 export import compress_videos;
+export import timer;
 
 export class Game {
     bool initialized{false};
     bool running{false};
-    double startTime{0};
+    Timer timer;
 
 public:
     Controls controls;
@@ -34,7 +35,7 @@ public:
 
     bool isRunning() const { return running; }
 
-    float getStartTime() const { return startTime; }
+    float getTimeRunning() const { return timer.Elapsed(); }
 
     void initialize(const Subject subject) {
         initialized = true;
@@ -48,6 +49,7 @@ public:
         running = true;
         zaber.start();
         ephys.start();
+        timer.Reset();
     }
 
     void stop() {

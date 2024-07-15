@@ -6,7 +6,6 @@
 #include <string>
 #include <imgui_impl_raylib.h>
 
-import timer;
 
 constexpr ImVec4 red{1., 0., 0., 1.};
 constexpr ImVec4 green{0., 1., 0., 1.};
@@ -62,7 +61,7 @@ void statusWindow(const Game &game) {
         ImGui::TextColored({1., 0., 0., 1.}, "Experiment not running");
     }
     if (game.isRunning()) {
-        ImGui::Text("Time from start: %f", game.getStartTime());
+        ImGui::Text("Time from start: %f", game.getTimeRunning());
     } else {
         ImGui::Text("Time from start: 0");
     }
@@ -283,9 +282,9 @@ void imguiWindowMain(ImGuiIO io, Game &game) {
     statusWindow(game);
     zaberWindow(game);
     ephysWindow(game);
-    camerasWindow(game);
-    ImGui::TableSetColumnIndex(1);
+    // camerasWindow(game);
     dataWindow(game);
+    ImGui::TableSetColumnIndex(1);
     manualWindow(game);
 
     ImGui::SeparatorText("Extra Options");
