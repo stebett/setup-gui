@@ -83,13 +83,20 @@ void PathManager::cleanRecordingDirs() const {
     try {
         spdlog::info("[PathManager] Removing directory: {}", ephysRecordingPath.string());
         std::filesystem::remove_all(absolute(ephysRecordingPath));
+        std::filesystem::create_directories(absolute(ephysRecordingPath));
+    } catch (const std::filesystem::filesystem_error &e) {
+        spdlog::error("[PathManager] [cleanRecordingDirs]\n{}", e.what());
+    }
+    try {
         spdlog::info("[PathManager] Removing directory: {}", cam1InputPath.string());
         std::filesystem::remove_all(absolute(cam1InputPath));
+        std::filesystem::create_directories(absolute(cam1InputPath));
+    } catch (const std::filesystem::filesystem_error &e) {
+        spdlog::error("[PathManager] [cleanRecordingDirs]\n{}", e.what());
+    }
+    try {
         spdlog::info("[PathManager] Removing directory: {}", cam2InputPath.string());
         std::filesystem::remove_all(absolute(cam2InputPath));
-        spdlog::info("[PathManager] Recreating recording directories");
-        std::filesystem::create_directories(absolute(ephysRecordingPath));
-        std::filesystem::create_directories(absolute(cam1InputPath));
         std::filesystem::create_directories(absolute(cam2InputPath));
     } catch (const std::filesystem::filesystem_error &e) {
         spdlog::error("[PathManager] [cleanRecordingDirs]\n{}", e.what());
